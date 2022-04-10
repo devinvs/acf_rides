@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     email TEXT,
     fullname TEXT,
     password TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE events (
-    id INTEGER PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     name TEXT,
     time INTEGER,
     address1 TEXT,
@@ -19,9 +19,9 @@ CREATE TABLE events (
 );
 
 CREATE TABLE rides (
-    rider_id INTEGER,
-    driver_id INTEGER,
-    event_id INTEGER,
+    rider_id TEXT,
+    driver_id TEXT,
+    event_id TEXT,
     pickup_location TEXT,
     FOREIGN KEY (rider_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (driver_id) REFERENCES users (id) ON DELETE CASCADE,
@@ -29,8 +29,8 @@ CREATE TABLE rides (
 );
 
 CREATE TABLE vehicles (
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER,
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
     color TEXT,
     make TEXT,
     model TEXT,
@@ -38,10 +38,10 @@ CREATE TABLE vehicles (
 );
 
 CREATE TABLE drivers (
-    event_id INTEGER,
-    driver_id INTEGER,
+    event_id TEXT,
+    driver_id TEXT,
     seats INTEGER,
-    vehicle_id INTEGER,
+    vehicle_id TEXT,
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
     FOREIGN KEY (driver_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE

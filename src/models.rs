@@ -6,6 +6,15 @@ pub enum Campus {
     UofR
 }
 
+impl Campus {
+    pub fn to_string(self) -> String {
+        match self {
+            Campus::RIT => "RIT".into(),
+            Campus::UofR => "UR".into()
+        }
+    }
+}
+
 pub struct User {
     pub id: Uuid,
     pub email: String,
@@ -43,7 +52,7 @@ pub struct Driver {
 
 pub struct Ride {
     pub rider_id: Uuid,
-    pub driver_id: Uuid,
+    pub driver_id: Option<Uuid>,
     pub event_id: Uuid,
     pub pickup_location: String
 }
