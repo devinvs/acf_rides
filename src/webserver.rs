@@ -9,6 +9,8 @@ use uuid::Uuid;
 use crate::db;
 use crate::models::{Campus, Event, Vehicle};
 use askama::Template;
+use std::fs::File;
+use std::io::Read;
 
 // Templates
 #[derive(Template)]
@@ -66,6 +68,17 @@ macro_rules! auth {
                 .finish();
         }
     };
+}
+
+#[get("/css")]
+async fn get_css() -> impl Responder {
+    let mut f = File::open("./public/style.css").unwrap();
+    let mut buf = String::new();
+    f.read_to_string(&mut buf).unwrap();
+
+    HttpResponse::Ok()
+        .content_type("text/css")
+        .body(buf)
 }
 
 #[get("/")]
@@ -414,6 +427,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(post_pickup)
             .service(get_seats)
             .service(post_seats)
+            .service(get_css)
     })
     .bind(("localhost", 8080))?
     .run()
