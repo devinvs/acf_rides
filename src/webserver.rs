@@ -13,7 +13,7 @@ macro_rules! auth {
         let logged_in = $s.get::<bool>("logged_in")?;
         if logged_in.is_none() || !logged_in.unwrap() {
             return Ok(
-                HttpResponse::TemporaryRedirect()
+                HttpResponse::MovedPermanently()
                 .append_header(("Location", "/login"))
                 .finish()
             )
@@ -21,21 +21,25 @@ macro_rules! auth {
     };
 }
 
+fn read_file(path: &str) -> String {
+    let mut f = File::open(path).unwrap();
+    let mut buf = String::new();
+    f.read_to_string(&mut buf).unwrap();
+
+    buf
+}
+
 
 #[get("/")]
 async fn get_root(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body("Hello World"))
+    Ok(HttpResponse::Ok().body(read_file("./public/drive_or_ride.html")))
 }
 
 #[get("/login")]
 async fn get_login() -> impl Responder {
-    let mut f = File::open("./public/login.html").unwrap();
-    let mut buf = String::new();
-    f.read_to_string(&mut buf).unwrap();
-
     HttpResponse::Ok()
-        .body(buf)
+        .body(read_file("./public/login.html"))
 }
 
 #[derive(Deserialize)]
@@ -54,25 +58,42 @@ async fn post_login(s: Session, form: web::Form<FormData>) -> impl Responder {
         if verify.is_ok() && verify.unwrap() {
             s.insert("logged_in", true).unwrap();
 
-            return HttpResponse::PermanentRedirect()
+            return HttpResponse::MovedPermanently()
                 .append_header(("Location", "/"))
                 .finish();
         }
     }
 
-    HttpResponse::Ok().body("Fail")
+    HttpResponse::Ok()
+        .body(read_file("./public/login.html"))
 }
 
 #[get("/events")]
 async fn get_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body("Events"))
+    Ok(HttpResponse::Ok().body(read_file("./public/events.html")))
 }
 
 #[get("/vehicles")]
 async fn get_vehicles(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body("Vehicles"))
+    Ok(HttpResponse::Ok().body(read_file("./public/vehicles.html")))
+}
+
+#[get("/signup")]
+async fn get_signup() -> impl Responder {
+    read_file("./public/signup.html")
+}
+
+#[get("/manage_events")]
+async fn get_manage_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
+    auth!(s);
+    Ok(HttpResponse::Ok().body(read_file("./public/manage_events.html")))
+}
+
+#[get("/reset")]
+async fn get_reset_password() -> impl Responder {
+    read_file("./public/reset_password.html")
 }
 
 pub async fn start() -> std::io::Result<()> {
