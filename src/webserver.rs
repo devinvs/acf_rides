@@ -18,12 +18,8 @@ struct LoginTemplate {
 }
 
 #[derive(Template)]
-#[template(path = "drive_or_ride.html")]
-struct DriveOrRideTemplate {}
-
-#[derive(Template)]
-#[template(path = "driver_summary.html")]
-struct DriverSummaryTemplate {}
+#[template(path = "summary.html")]
+struct SummaryTemplate {}
 
 #[derive(Template)]
 #[template(path = "events.html")]
@@ -33,16 +29,16 @@ struct EventsTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "pickup.html")]
+struct PickupTemplate {}
+
+#[derive(Template)]
 #[template(path = "manage_events.html")]
 struct ManageEventsTemplate {}
 
 #[derive(Template)]
 #[template(path = "reset_password.html")]
 struct ResetPasswordTemplate {}
-
-#[derive(Template)]
-#[template(path = "rider_summary.html")]
-struct RiderSummaryTemplate {}
 
 #[derive(Template)]
 #[template(path = "signup.html")]
@@ -56,6 +52,10 @@ struct VehiclesTemplate {
     vehicles: Vec<Vehicle>
 }
 
+#[derive(Template)]
+#[template(path = "seats.html")]
+struct SeatsTemplate {}
+
 macro_rules! auth {
     ($s:ident) => {
         let logged_in = $s.get::<bool>("logged_in").unwrap();
@@ -68,61 +68,11 @@ macro_rules! auth {
     };
 }
 
-#[derive(Deserialize)]
-struct EventPickupQuery {
-    event_id: String,
-    pickup: String
-}
-
-#[derive(Deserialize)]
-struct VehicleQuery {
-    vehicle_id: String,
-    seats: usize
-}
-
-#[get("/")]
-async fn get_root_rider(s: Session, q: web::Query<EventPickupQuery>) -> impl Responder {
-    auth!(s);
-
-    let id: String = s.get("user_id").unwrap().unwrap();
-    let id = Uuid::parse_str(id.as_str()).unwrap();
-    let event_id = Uuid::parse_str(q.event_id.clone().as_str()).unwrap();
-    let pickup = q.pickup.clone();
-
-    let conn = db::connect();
-    db::create_ride(&conn, id, event_id, pickup).unwrap();
-
-    HttpResponse::Ok().body(
-        RiderSummaryTemplate {}.render().unwrap()
-    )
-}
-
-#[get("/")]
-async fn get_root_driver(s: Session, q: web::Query<VehicleQuery>) -> impl Responder {
-    auth!(s);
-
-    let id: String = s.get("user_id").unwrap().unwrap();
-    let id = Uuid::parse_str(id.as_str()).unwrap();
-    let event_id: String = s.get("event_id").unwrap().unwrap();
-    let event_id = Uuid::parse_str(event_id.as_str()).unwrap();
-    let vehicle_id = Uuid::parse_str(q.vehicle_id.clone().as_str()).unwrap();
-    let seats = q.seats;
-
-    let conn = db::connect();
-    db::create_driver(&conn, id, event_id, vehicle_id, seats).unwrap();
-
-    HttpResponse::Ok().body(
-        DriverSummaryTemplate {}.render().unwrap()
-    )
-}
-
-
 #[get("/")]
 async fn get_root(s: Session) -> impl Responder {
     auth!(s);
-    HttpResponse::Ok().body(
-        DriveOrRideTemplate {}.render().unwrap()
-    )
+
+    HttpResponse::Ok().body(SummaryTemplate {}.render().unwrap())
 }
 
 #[get("/login")]
@@ -173,7 +123,7 @@ async fn get_events(s: Session, flow: web::Query<FlowQuery>) -> impl Responder {
 
     let href = match flow.flow.as_str() {
         "drive" => "/vehicles",
-        "ride" => "/",
+        "ride" => "/pickup",
         _ => {
             return HttpResponse::SeeOther()
                 .append_header(("Location", "/"))
@@ -192,6 +142,41 @@ async fn get_events(s: Session, flow: web::Query<FlowQuery>) -> impl Responder {
             href
         }.render().unwrap()
     )
+}
+
+#[get("/pickup")]
+async fn get_pickup(s: Session, q: web::Query<EventQuery>) -> impl Responder {
+    auth!(s);
+
+    s.insert("event_id", q.event_id.clone()).unwrap();
+
+    HttpResponse::Ok()
+        .body(PickupTemplate {}.render().unwrap())
+}
+
+#[derive(Deserialize)]
+struct PickupData {
+    pickup: String
+}
+
+#[post("/pickup")]
+async fn post_pickup(s: Session, form: web::Form<PickupData>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let event_id: String = s.get("event_id").unwrap().unwrap();
+    let event_id = Uuid::parse_str(event_id.as_str()).unwrap();
+
+    let pickup = form.pickup.clone();
+
+    let conn = db::connect();
+    db::create_ride(&conn, id, event_id, pickup).unwrap();
+
+    HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish()
 }
 
 #[derive(Deserialize)]
@@ -241,6 +226,47 @@ async fn post_vehicle(s: Session, form: web::Form<VehicleFormData>) -> impl Resp
             vehicles
         }.render().unwrap()
     )
+}
+
+#[derive(Deserialize)]
+struct VehicleQuery {
+    vehicle_id: String
+}
+
+#[get("/seats")]
+async fn get_seats(s: Session, q: web::Query<VehicleQuery>) -> impl Responder {
+    auth!(s);
+
+    s.insert("vehicle_id", q.vehicle_id.clone()).unwrap();
+
+    HttpResponse::Ok()
+        .body(SeatsTemplate{}.render().unwrap())
+}
+
+#[derive(Deserialize)]
+struct SeatsData {
+    seats: usize
+}
+
+#[post("/seats")]
+async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let event_id: String = s.get("event_id").unwrap().unwrap();
+    let event_id = Uuid::parse_str(event_id.as_str()).unwrap();
+
+    let vehicle_id: String = s.get("vehicle_id").unwrap().unwrap();
+    let vehicle_id = Uuid::parse_str(vehicle_id.as_str()).unwrap();
+
+    let conn = db::connect();
+    db::create_driver(&conn, id, event_id, vehicle_id, form.seats).unwrap();
+
+    HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish()
 }
 
 #[get("/signup")]
@@ -384,8 +410,13 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_manage_events)
             .service(post_manage_events)
             .service(get_reset_password)
+            .service(get_pickup)
+            .service(post_pickup)
+            .service(get_seats)
+            .service(post_seats)
     })
     .bind(("localhost", 8080))?
     .run()
     .await
 }
+

@@ -175,6 +175,7 @@ pub fn create_ride(
     event_id: Uuid,
     pickup_location: String
 ) -> Result<(), Box<dyn Error>> {
+    info!("Create Ride");
     let mut stmt = conn.prepare(
         include_str!("./sql/create_ride.sql")
     )?;
