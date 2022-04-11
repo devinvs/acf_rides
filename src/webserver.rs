@@ -3,47 +3,71 @@ use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
 use actix_web::cookie::Key;
 use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
 use std::error::Error;
-use std::fs::File;
-use std::io::Read;
 use serde::Deserialize;
 use crate::db;
 use crate::models::Campus;
-use askama::Template;
+use askama::{Template};
 
 // Templates
+#[derive(Template)]
+#[template(path = "login.html")]
+struct LoginTemplate {}
+
+#[derive(Template)]
+#[template(path = "drive_or_ride.html")]
+struct DriveOrRideTemplate {}
+
+#[derive(Template)]
+#[template(path = "driver_summary.html")]
+struct DriverSummaryTemplate {}
+
+#[derive(Template)]
+#[template(path = "events.html")]
+struct EventsTemplate {}
+
+#[derive(Template)]
+#[template(path = "manage_events.html")]
+struct ManageEventsTemplate {}
+
+#[derive(Template)]
+#[template(path = "reset_password.html")]
+struct ResetPasswordTemplate {}
+
+#[derive(Template)]
+#[template(path = "rider_summary.html")]
+struct RiderSummaryTemplate {}
+
+#[derive(Template)]
+#[template(path = "signup.html")]
+struct SignupTemplate {}
+
+#[derive(Template)]
+#[template(path = "vehicles.html")]
+struct VehiclesTemplate {}
 
 macro_rules! auth {
     ($s:ident) => {
-        let logged_in = $s.get::<bool>("logged_in")?;
-        println!("check login: {:?}", logged_in);
+        let logged_in = $s.get::<bool>("logged_in").unwrap();
         if logged_in.is_none() || !logged_in.unwrap() {
-            return Ok(
+            return
                 HttpResponse::MovedPermanently()
                 .append_header(("Location", "/login"))
-                .finish()
-            )
+                .finish();
         }
     };
 }
 
-fn read_file(path: &str) -> HttpResponse {
-    let mut f = File::open(path).unwrap();
-    let mut buf = String::new();
-    f.read_to_string(&mut buf).unwrap();
-
-    HttpResponse::Ok().body(buf)
-}
-
-
 #[get("/")]
-async fn get_root(s: Session) -> Result<impl Responder, Box<dyn Error>> {
+async fn get_root(s: Session) -> impl Responder {
     auth!(s);
-    Ok(read_file("./public/drive_or_ride.html"))
+    HttpResponse::Ok().body(
+        DriveOrRideTemplate {}.render().unwrap()
+    )
 }
 
 #[get("/login")]
 async fn get_login() -> impl Responder {
-    read_file("./public/login.html")
+    LoginTemplate {}
 }
 
 #[derive(Deserialize)]
@@ -68,24 +92,30 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
         }
     }
 
-    read_file("./public/login.html")
+    HttpResponse::Ok().body(
+        LoginTemplate{}.render().unwrap()
+    )
 }
 
 #[get("/events")]
-async fn get_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
+async fn get_events(s: Session) -> impl Responder {
     auth!(s);
-    Ok(read_file("./public/events.html"))
+    HttpResponse::Ok().body(
+        EventsTemplate {}.render().unwrap()
+    )
 }
 
 #[get("/vehicles")]
-async fn get_vehicles(s: Session) -> Result<impl Responder, Box<dyn Error>> {
+async fn get_vehicles(s: Session) -> impl Responder {
     auth!(s);
-    Ok(read_file("./public/vehicles.html"))
+    HttpResponse::Ok().body(
+        VehiclesTemplate {}.render().unwrap()
+    )
 }
 
 #[get("/signup")]
 async fn get_signup() -> impl Responder {
-    read_file("./public/signup.html")
+    SignupTemplate {}
 }
 
 #[derive(Deserialize)]
@@ -99,16 +129,20 @@ struct SignupFormData {
 }
 
 #[post("/signup")]
-async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> Result<impl Responder, Box<dyn Error>> {
+async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Responder {
 
     if !form.email.ends_with("@rit.edu")
     && !form.email.ends_with("@g.rit.edu")
     && !form.email.ends_with("@u.rochester.edu") {
-        return Ok(read_file("./public/signup.html"));
+        return HttpResponse::Ok().body(
+            SignupTemplate {}.render().unwrap()
+        );
     }
 
     if form.password != form.confirm_password {
-        return Ok(read_file("./public/signup.html"));
+        return HttpResponse::Ok().body(
+            SignupTemplate {}.render().unwrap()
+        );
     }
 
     let campus: Campus = form.campus.as_str().into();
@@ -121,24 +155,26 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> Result<impl
         form.password.clone(),
         form.phone.clone(),
         campus
-    )?;
+    ).unwrap();
 
-    s.insert("logged_in", true)?;
+    s.insert("logged_in", true).unwrap();
 
-    Ok(HttpResponse::MovedPermanently()
+    HttpResponse::MovedPermanently()
         .append_header(("Location", "/"))
-        .finish())
+        .finish()
 }
 
 #[get("/manage_events")]
-async fn get_manage_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
+async fn get_manage_events(s: Session) -> impl Responder {
     auth!(s);
-    Ok(read_file("./public/manage_events.html"))
+    HttpResponse::Ok().body(
+        ManageEventsTemplate {}.render().unwrap()
+    )
 }
 
 #[get("/reset")]
 async fn get_reset_password() -> impl Responder {
-    read_file("./public/reset_password.html")
+    ResetPasswordTemplate {}.render().unwrap()
 }
 
 pub async fn start() -> std::io::Result<()> {
