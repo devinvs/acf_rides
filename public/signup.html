@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
+    <h2>Account Creation</h2>
     <form action="\signup" method="post">
         <input type="text" name="name" placeholder="Full Name" required>
         <br>
@@ -17,6 +18,9 @@
         <br>
         <input type="password" name="confirm_password" placeholder="Confirm Password" required>
         <br>
+        <input type="tel" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+        placeholder="Phone Number" required>
+        <br>
         Select Campus <select name = "campus" required>
             <option value = "" ></option>
             <option value = "RIT" >RIT</option>
@@ -24,6 +28,7 @@
         </select>
         <br>
         <input type="submit" name="signup" value="Sign Up">
+        <a href="/login">Sign In Instead</a>
     </form>
 </body>
 </html>
