@@ -116,6 +116,9 @@ pub async fn start() -> std::io::Result<()> {
             .service(post_login)
             .service(get_events)
             .service(get_vehicles)
+            .service(get_signup)
+            .service(get_manage_events)
+            .service(get_reset_password)
     })
     .bind(("localhost", 8080))?
     .run()
