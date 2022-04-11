@@ -21,25 +21,24 @@ macro_rules! auth {
     };
 }
 
-fn read_file(path: &str) -> String {
+fn read_file(path: &str) -> HttpResponse {
     let mut f = File::open(path).unwrap();
     let mut buf = String::new();
     f.read_to_string(&mut buf).unwrap();
 
-    buf
+    HttpResponse::Ok().body(buf)
 }
 
 
 #[get("/")]
 async fn get_root(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body(read_file("./public/drive_or_ride.html")))
+    Ok(read_file("./public/drive_or_ride.html"))
 }
 
 #[get("/login")]
 async fn get_login() -> impl Responder {
-    HttpResponse::Ok()
-        .body(read_file("./public/login.html"))
+    read_file("./public/login.html")
 }
 
 #[derive(Deserialize)]
@@ -64,20 +63,19 @@ async fn post_login(s: Session, form: web::Form<FormData>) -> impl Responder {
         }
     }
 
-    HttpResponse::Ok()
-        .body(read_file("./public/login.html"))
+    read_file("./public/login.html")
 }
 
 #[get("/events")]
 async fn get_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body(read_file("./public/events.html")))
+    Ok(read_file("./public/events.html"))
 }
 
 #[get("/vehicles")]
 async fn get_vehicles(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body(read_file("./public/vehicles.html")))
+    Ok(read_file("./public/vehicles.html"))
 }
 
 #[get("/signup")]
@@ -88,7 +86,7 @@ async fn get_signup() -> impl Responder {
 #[get("/manage_events")]
 async fn get_manage_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
-    Ok(HttpResponse::Ok().body(read_file("./public/manage_events.html")))
+    Ok(read_file("./public/manage_events.html"))
 }
 
 #[get("/reset")]
