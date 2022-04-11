@@ -2,11 +2,10 @@ use log::info;
 use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
 use actix_web::cookie::Key;
 use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
-use std::error::Error;
 use serde::Deserialize;
 use crate::db;
 use crate::models::{Campus, Event, Vehicle};
-use askama::{Template};
+use askama::Template;
 
 // Templates
 #[derive(Template)]
@@ -104,7 +103,7 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
 
     HttpResponse::Ok().body(
         LoginTemplate{
-            error: "unable to login".into()
+            error: "Email/Password Incorrect".into()
         }.render().unwrap()
     )
 }
