@@ -1,4 +1,5 @@
 use log::info;
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
 use actix_web::cookie::Key;
 use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
@@ -245,6 +246,7 @@ pub async fn start() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::new("%r"))
             .wrap(
                 SessionMiddleware::builder(
                     CookieSessionStore::default(),

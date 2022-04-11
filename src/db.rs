@@ -100,6 +100,7 @@ pub fn get_riders(
     event_id: Uuid,
     driver_id: Uuid
 ) -> Result<Vec<User>, Box<dyn Error>> {
+    info!("Getting riders for driver");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_riders.sql")
     )?.into_cursor();
@@ -122,6 +123,7 @@ pub fn get_available_drivers(
     event_id: Uuid,
     campus: Campus,
 ) -> Result<Vec<Driver>, Box<dyn Error>> {
+    info!("Getting available drivers for event");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_available_drivers.sql")
     )?.into_cursor();
@@ -147,6 +149,7 @@ pub fn get_driver_passengers(
     event_id: Uuid,
     driver_id: Uuid
 ) -> Result<Vec<(User, String)>, Box<dyn Error>> {
+    info!("Get passengers for a driver");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_driver_passengers.sql")
     )?.into_cursor();
@@ -176,6 +179,7 @@ pub fn create_event(
     state: String,
     zipcode: String
 ) -> Result<(), Box<dyn Error>> {
+    info!("Create event: {name}");
     let id = Uuid::new_v4().to_string();
     let mut stmt = conn.prepare(include_str!("./sql/create_event.sql"))?;
 
@@ -197,6 +201,7 @@ pub fn create_event(
 }
 
 pub fn get_events(conn: &Connection) -> Result<Vec<Event>, Box<dyn Error>> {
+    info!("Get events");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_events.sql")
     )?.into_cursor();
@@ -216,6 +221,7 @@ pub fn create_vehicle(
     make: String,
     model: String
 ) -> Result<(), Box<dyn Error>> {
+    info!("Create vehicle: {make} {model}");
     let id = Uuid::new_v4().to_string();
 
     let mut stmt = conn.prepare(include_str!("./sql/create_vehicle.sql"))?;
@@ -238,6 +244,7 @@ pub fn get_driver_vehicles(
     conn: &Connection,
     driver_id: Uuid
 ) -> Result<Vec<Vehicle>, Box<dyn Error>> {
+    info!("Get driver's vehicles");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_driver_vehicles.sql")
     )?.into_cursor();
@@ -257,6 +264,7 @@ pub fn get_vehicle(
     conn: &Connection,
     id: Uuid
 ) -> Result<Option<Vehicle>, Box<dyn Error>> {
+    info!("Get vehicle: {id}");
 
     let mut cursor = conn.prepare(
         include_str!("./sql/get_vehicle.sql")
