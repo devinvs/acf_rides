@@ -1,4 +1,4 @@
-SELECT (
+SELECT
     id,
     name,
     time,
@@ -6,5 +6,7 @@ SELECT (
     address2,
     city,
     state,
-    zipcode
-) FROM events;
+    zipcode,
+    owner_id
+FROM events
+ORDER BY time;

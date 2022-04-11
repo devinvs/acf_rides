@@ -1,10 +1,10 @@
-SELECT (
+SELECT
     id,
     email,
     fullname,
     password,
     number,
     campus
-) FROM users
+FROM users
 WHERE id = '?'
 LIMIT 1;

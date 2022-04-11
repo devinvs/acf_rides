@@ -15,7 +15,9 @@ CREATE TABLE events (
     address2 TEXt,
     city TEXT,
     state TEXT,
-    zipcode TEXT
+    zipcode TEXT,
+    creator_id TEXT,
+    FOREIGN KEY (creator_id) REFERENCES users (id)
 );
 
 CREATE TABLE rides (

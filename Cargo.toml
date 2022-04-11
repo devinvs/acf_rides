@@ -9,7 +9,9 @@ edition = "2021"
 sqlite = "0.26"
 log = "0.4"
 actix-web = "4"
+actix-session = {version="0.6", features=["cookie-session"]}
 env_logger = "0.9"
 uuid = {version="*", features=["v4"]}
 chrono = "*"
 bcrypt = "*"
+serde = {version="*", features=["derive"]}

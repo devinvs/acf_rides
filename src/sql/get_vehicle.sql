@@ -1,9 +1,9 @@
-SELECT (
+SELECT
     id,
     user_id,
     color,
     make,
     model
-) FROM vehicles
+FROM vehicles
 WHERE id = '?'
 LIMIT 1;
