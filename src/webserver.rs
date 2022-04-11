@@ -54,7 +54,7 @@ async fn post_login(s: Session, form: web::Form<FormData>) -> impl Responder {
         if verify.is_ok() && verify.unwrap() {
             s.insert("logged_in", true).unwrap();
 
-            return HttpResponse::TemporaryRedirect()
+            return HttpResponse::PermanentRedirect()
                 .append_header(("Location", "/"))
                 .finish();
         }
