@@ -9,11 +9,13 @@
 <body>
     <h1>ACF<br> Rides</h1>
     <form action="\login" method="post">
-        <input type="email" name="email" placeholder="Email">
-        <input type="text" name="password" placeholder="Password">
+        <input type="email" name="email" placeholder="Email" required>
+        <br>
+        <input type="password" name="password" placeholder="Password" required>
+        <br>
+        <a href="/reset">Forgot Password</a>
         <input type="submit" value="Login">
     </form>
-    <a href="/reset_password">Forgot Password</a>
     <a href="/signup">Create an Account</a>
 </body>
 </html>

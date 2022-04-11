@@ -8,10 +8,21 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
-    <form action="\login" method="post">
-        <input type="text" name="user_name" placeholder="enter your full name">
-        <input type="email" name="user_email" placeholder="enter your email">
-        <input type="text" name="user_password" placeholder="enter your password">
+    <form action="\signup" method="post">
+        <input type="text" name="name" placeholder="Full Name" required>
+        <br>
+        <input type="email" name="email" placeholder="Email" required>
+        <br>
+        <input type="password" name="password" placeholder="Password" required>
+        <br>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+        <br>
+        Select Campus <select name = "campus" required>
+            <option value = "" ></option>
+            <option value = "RIT" >RIT</option>
+            <option value = "UofR">UofR</option>
+        </select>
+        <br>
         <input type="submit" name="signup" value="Sign Up">
     </form>
 </body>
