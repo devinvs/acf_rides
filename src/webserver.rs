@@ -215,8 +215,10 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
         form.phone.clone(),
         campus
     ).unwrap();
+    let user = db::get_user_by_email(&conn, form.email.clone()).unwrap().unwrap();
 
     s.insert("logged_in", true).unwrap();
+    s.insert("user_id", user.id.to_string()).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -256,6 +258,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(post_login)
             .service(get_events)
             .service(get_vehicles)
+            .service(post_vehicle)
             .service(get_signup)
             .service(post_signup)
             .service(get_manage_events)
