@@ -58,7 +58,7 @@ macro_rules! auth {
         let logged_in = $s.get::<bool>("logged_in").unwrap();
         if logged_in.is_none() || !logged_in.unwrap() {
             return
-                HttpResponse::MovedPermanently()
+                HttpResponse::SeeOther()
                 .append_header(("Location", "/login"))
                 .finish();
         }
@@ -97,7 +97,7 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
             s.insert("logged_in", true).unwrap();
             s.insert("user_id", u.id.to_string()).unwrap();
 
-            return HttpResponse::MovedPermanently()
+            return HttpResponse::SeeOther()
                 .append_header(("Location", "/"))
                 .finish();
         }
@@ -128,10 +128,35 @@ async fn get_events(s: Session) -> impl Responder {
 async fn get_vehicles(s: Session) -> impl Responder {
     auth!(s);
 
-    let id: String = s.get("id").unwrap().unwrap();
+    let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
 
     let conn = db::connect();
+    let vehicles = db::get_driver_vehicles(&conn, id).unwrap();
+
+    HttpResponse::Ok().body(
+        VehiclesTemplate {
+            vehicles
+        }.render().unwrap()
+    )
+}
+
+#[derive(Deserialize)]
+struct VehicleFormData {
+    make: String,
+    model: String,
+    color: String
+}
+
+#[post("/vehicles")]
+async fn post_vehicle(s: Session, form: web::Form<VehicleFormData>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let conn = db::connect();
+    db::create_vehicle(&conn, id, form.color.clone(), form.make.clone(), form.model.clone()).unwrap();
     let vehicles = db::get_driver_vehicles(&conn, id).unwrap();
 
     HttpResponse::Ok().body(
@@ -193,7 +218,7 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
 
     s.insert("logged_in", true).unwrap();
 
-    HttpResponse::MovedPermanently()
+    HttpResponse::SeeOther()
         .append_header(("Location", "/"))
         .finish()
 }

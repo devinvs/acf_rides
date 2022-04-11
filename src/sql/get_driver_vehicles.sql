@@ -5,4 +5,4 @@ SELECT
     v.make,
     v.model
 FROM vehicles v
-WHERE v.driver_id = '?';
+WHERE v.user_id = ?;

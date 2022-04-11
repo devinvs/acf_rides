@@ -246,6 +246,7 @@ pub fn get_driver_vehicles(
     let mut vehicles = Vec::new();
 
     while let Some(row) = cursor.next()? {
+        println!("{:?}", row);
         vehicles.push(row.into());
     }
 

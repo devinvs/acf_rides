@@ -4,5 +4,5 @@ SELECT
     seats,
     vehicle_id
 FROM drivers
-WHERE event_id = '?'
-AND campus = '?';
+WHERE event_id = ?
+AND campus = ?;

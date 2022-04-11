@@ -5,5 +5,5 @@ SELECT
     make,
     model
 FROM vehicles
-WHERE id = '?'
+WHERE id = ?
 LIMIT 1;

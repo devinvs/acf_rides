@@ -6,5 +6,5 @@ SELECT
     number,
     campus
 FROM users
-WHERE id = '?'
+WHERE id = ?
 LIMIT 1;

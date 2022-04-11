@@ -7,6 +7,6 @@ SELECT
     city,
     state,
     zipcode,
-    owner_id
+    creator_id
 FROM events
 ORDER BY time;
