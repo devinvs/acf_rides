@@ -7,10 +7,12 @@ use std::fs::File;
 use std::io::Read;
 use serde::Deserialize;
 use crate::db;
+use crate::models::Campus;
 
 macro_rules! auth {
     ($s:ident) => {
         let logged_in = $s.get::<bool>("logged_in")?;
+        println!("check login: {:?}", logged_in);
         if logged_in.is_none() || !logged_in.unwrap() {
             return Ok(
                 HttpResponse::MovedPermanently()
@@ -42,13 +44,13 @@ async fn get_login() -> impl Responder {
 }
 
 #[derive(Deserialize)]
-struct FormData {
+struct LoginFormData {
     email: String,
     password: String
 }
 
 #[post("/login")]
-async fn post_login(s: Session, form: web::Form<FormData>) -> impl Responder {
+async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responder {
     let conn = db::connect();
     let user = db::get_user_by_email(&conn, form.email.clone()).unwrap();
 
@@ -83,6 +85,48 @@ async fn get_signup() -> impl Responder {
     read_file("./public/signup.html")
 }
 
+#[derive(Deserialize)]
+struct SignupFormData {
+    fullname: String,
+    email: String,
+    password: String,
+    confirm_password: String,
+    campus: String,
+    number: String
+}
+
+#[post("/signup")]
+async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> Result<impl Responder, Box<dyn Error>> {
+
+    if !form.email.ends_with("@rit.edu")
+    && !form.email.ends_with("@g.rit.edu")
+    && !form.email.ends_with("@u.rochester.edu") {
+        return Ok(read_file("./public/signup.html"));
+    }
+
+    if form.password != form.confirm_password {
+        return Ok(read_file("./public/signup.html"));
+    }
+
+    let campus: Campus = form.campus.as_str().into();
+
+    let conn = db::connect();
+    db::create_user(
+        &conn,
+        form.email.clone(),
+        form.fullname.clone(),
+        form.password.clone(),
+        form.number.clone(),
+        campus
+    )?;
+
+    s.insert("logged_in", true)?;
+
+    Ok(HttpResponse::MovedPermanently()
+        .append_header(("Location", "/"))
+        .finish())
+}
+
 #[get("/manage_events")]
 async fn get_manage_events(s: Session) -> Result<impl Responder, Box<dyn Error>> {
     auth!(s);
@@ -115,6 +159,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_events)
             .service(get_vehicles)
             .service(get_signup)
+            .service(post_signup)
             .service(get_manage_events)
             .service(get_reset_password)
     })
