@@ -8,5 +8,13 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
+    <h2>Events</h2>
+    {% for event in events %}
+    <li>
+        <a href="{{event.href}}">
+            {{event.name}}
+        </a>
+    </li>
+    {% endfor %}
 </body>
 </html>
