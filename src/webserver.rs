@@ -43,7 +43,9 @@ struct RiderSummaryTemplate {}
 
 #[derive(Template)]
 #[template(path = "signup.html")]
-struct SignupTemplate {}
+struct SignupTemplate {
+    error: String
+}
 
 #[derive(Template)]
 #[template(path = "vehicles.html")]
@@ -129,7 +131,9 @@ async fn get_vehicles(s: Session) -> impl Responder {
 
 #[get("/signup")]
 async fn get_signup() -> impl Responder {
-    SignupTemplate {}
+    SignupTemplate {
+        error: "".into()
+    }
 }
 
 #[derive(Deserialize)]
@@ -149,13 +153,17 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
     && !form.email.ends_with("@g.rit.edu")
     && !form.email.ends_with("@u.rochester.edu") {
         return HttpResponse::Ok().body(
-            SignupTemplate {}.render().unwrap()
+            SignupTemplate {
+                error: "Must have a .edu email".into()
+            }.render().unwrap()
         );
     }
 
     if form.password != form.confirm_password {
         return HttpResponse::Ok().body(
-            SignupTemplate {}.render().unwrap()
+            SignupTemplate {
+                error: "Passwords do not match".into()
+            }.render().unwrap()
         );
     }
 
