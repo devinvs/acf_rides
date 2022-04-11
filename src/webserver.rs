@@ -8,6 +8,9 @@ use std::io::Read;
 use serde::Deserialize;
 use crate::db;
 use crate::models::Campus;
+use askama::Template;
+
+// Templates
 
 macro_rules! auth {
     ($s:ident) => {
