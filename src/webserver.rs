@@ -3,6 +3,7 @@ use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
 use actix_web::cookie::Key;
 use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
 use serde::Deserialize;
+use uuid::Uuid;
 use crate::db;
 use crate::models::{Campus, Event, Vehicle};
 use askama::Template;
@@ -94,6 +95,7 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
         let verify = bcrypt::verify(form.password.clone(), u.password.as_str());
         if verify.is_ok() && verify.unwrap() {
             s.insert("logged_in", true).unwrap();
+            s.insert("user_id", u.id.to_string()).unwrap();
 
             return HttpResponse::MovedPermanently()
                 .append_header(("Location", "/"))
@@ -111,9 +113,13 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
 #[get("/events")]
 async fn get_events(s: Session) -> impl Responder {
     auth!(s);
+
+    let conn = db::connect();
+    let events = db::get_events(&conn).unwrap();
+
     HttpResponse::Ok().body(
         EventsTemplate {
-            events: vec![]
+            events
         }.render().unwrap()
     )
 }
@@ -121,9 +127,16 @@ async fn get_events(s: Session) -> impl Responder {
 #[get("/vehicles")]
 async fn get_vehicles(s: Session) -> impl Responder {
     auth!(s);
+
+    let id: String = s.get("id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let conn = db::connect();
+    let vehicles = db::get_driver_vehicles(&conn, id).unwrap();
+
     HttpResponse::Ok().body(
         VehiclesTemplate {
-            vehicles: vec![]
+            vehicles
         }.render().unwrap()
     )
 }
