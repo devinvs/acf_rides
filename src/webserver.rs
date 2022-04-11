@@ -2,11 +2,10 @@ use log::info;
 use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
 use actix_web::cookie::Key;
 use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
-use std::error::Error;
 use serde::Deserialize;
 use crate::db;
 use crate::models::{Campus, Event, Vehicle};
-use askama::{Template};
+use askama::Template;
 
 // Templates
 #[derive(Template)]
@@ -43,7 +42,9 @@ struct RiderSummaryTemplate {}
 
 #[derive(Template)]
 #[template(path = "signup.html")]
-struct SignupTemplate {}
+struct SignupTemplate {
+    error: String
+}
 
 #[derive(Template)]
 #[template(path = "vehicles.html")]
@@ -102,7 +103,7 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
 
     HttpResponse::Ok().body(
         LoginTemplate{
-            error: "unable to login".into()
+            error: "Email/Password Incorrect".into()
         }.render().unwrap()
     )
 }
@@ -129,7 +130,9 @@ async fn get_vehicles(s: Session) -> impl Responder {
 
 #[get("/signup")]
 async fn get_signup() -> impl Responder {
-    SignupTemplate {}
+    SignupTemplate {
+        error: "".into()
+    }
 }
 
 #[derive(Deserialize)]
@@ -149,13 +152,17 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
     && !form.email.ends_with("@g.rit.edu")
     && !form.email.ends_with("@u.rochester.edu") {
         return HttpResponse::Ok().body(
-            SignupTemplate {}.render().unwrap()
+            SignupTemplate {
+                error: "Must have a .edu email".into()
+            }.render().unwrap()
         );
     }
 
     if form.password != form.confirm_password {
         return HttpResponse::Ok().body(
-            SignupTemplate {}.render().unwrap()
+            SignupTemplate {
+                error: "Passwords do not match".into()
+            }.render().unwrap()
         );
     }
 
