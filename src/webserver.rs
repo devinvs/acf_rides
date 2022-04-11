@@ -5,13 +5,15 @@ use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
 use std::error::Error;
 use serde::Deserialize;
 use crate::db;
-use crate::models::Campus;
+use crate::models::{Campus, Event, Vehicle};
 use askama::{Template};
 
 // Templates
 #[derive(Template)]
 #[template(path = "login.html")]
-struct LoginTemplate {}
+struct LoginTemplate {
+    error: String
+}
 
 #[derive(Template)]
 #[template(path = "drive_or_ride.html")]
@@ -23,7 +25,9 @@ struct DriverSummaryTemplate {}
 
 #[derive(Template)]
 #[template(path = "events.html")]
-struct EventsTemplate {}
+struct EventsTemplate {
+    events: Vec<Event>
+}
 
 #[derive(Template)]
 #[template(path = "manage_events.html")]
@@ -43,7 +47,9 @@ struct SignupTemplate {}
 
 #[derive(Template)]
 #[template(path = "vehicles.html")]
-struct VehiclesTemplate {}
+struct VehiclesTemplate {
+    vehicles: Vec<Vehicle>
+}
 
 macro_rules! auth {
     ($s:ident) => {
@@ -67,7 +73,9 @@ async fn get_root(s: Session) -> impl Responder {
 
 #[get("/login")]
 async fn get_login() -> impl Responder {
-    LoginTemplate {}
+    LoginTemplate {
+        error: "".into()
+    }
 }
 
 #[derive(Deserialize)]
@@ -93,7 +101,9 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
     }
 
     HttpResponse::Ok().body(
-        LoginTemplate{}.render().unwrap()
+        LoginTemplate{
+            error: "unable to login".into()
+        }.render().unwrap()
     )
 }
 
@@ -101,7 +111,9 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
 async fn get_events(s: Session) -> impl Responder {
     auth!(s);
     HttpResponse::Ok().body(
-        EventsTemplate {}.render().unwrap()
+        EventsTemplate {
+            events: vec![]
+        }.render().unwrap()
     )
 }
 
@@ -109,7 +121,9 @@ async fn get_events(s: Session) -> impl Responder {
 async fn get_vehicles(s: Session) -> impl Responder {
     auth!(s);
     HttpResponse::Ok().body(
-        VehiclesTemplate {}.render().unwrap()
+        VehiclesTemplate {
+            vehicles: vec![]
+        }.render().unwrap()
     )
 }
 

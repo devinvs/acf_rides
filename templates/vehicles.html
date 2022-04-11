@@ -11,8 +11,8 @@
     <h2>Vehicles</h2>
     {% for vehicle in vehicles %}
     <li>
-        <a href="{{vehicle.href}}">
-            {{vehicle.name}}
+        <a>
+            {{vehicle.color}} {{vehicle.make}} {{vehicle.model}}
         </a>
     </li>
     {% endfor %}
