@@ -87,12 +87,12 @@ async fn get_signup() -> impl Responder {
 
 #[derive(Deserialize)]
 struct SignupFormData {
-    fullname: String,
+    name: String,
     email: String,
     password: String,
     confirm_password: String,
     campus: String,
-    number: String
+    phone: String
 }
 
 #[post("/signup")]
@@ -114,9 +114,9 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> Result<impl
     db::create_user(
         &conn,
         form.email.clone(),
-        form.fullname.clone(),
+        form.name.clone(),
         form.password.clone(),
-        form.number.clone(),
+        form.phone.clone(),
         campus
     )?;
 
