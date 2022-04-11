@@ -11,7 +11,7 @@
     <h2>Events</h2>
     {% for event in events %}
     <li>
-        <a>
+        <a href="{{href}}?event_id={{event.id}}">
             {{event.name}}
         </a>
     </li>

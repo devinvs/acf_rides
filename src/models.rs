@@ -76,7 +76,7 @@ impl From<&[Value]> for Event {
         );
         let address1 = row[3].as_string().unwrap().to_string();
         let address2 = row[4].as_string().unwrap().to_string();
-        let city = row[6].as_string().unwrap().to_string();
+        let city = row[5].as_string().unwrap().to_string();
         let state = row[6].as_string().unwrap().to_string();
         let zipcode = row[7].as_string().unwrap().to_string();
         let creator_id = Uuid::parse_str(row[8].as_string().unwrap()).unwrap();

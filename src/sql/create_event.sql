@@ -6,5 +6,6 @@ INSERT INTO events (
     address2,
     city,
     state,
-    zipcode
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    zipcode,
+    creator_id
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);

@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use log::info;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
@@ -27,7 +28,8 @@ struct DriverSummaryTemplate {}
 #[derive(Template)]
 #[template(path = "events.html")]
 struct EventsTemplate {
-    events: Vec<Event>
+    events: Vec<Event>,
+    href: String
 }
 
 #[derive(Template)]
@@ -65,6 +67,55 @@ macro_rules! auth {
         }
     };
 }
+
+#[derive(Deserialize)]
+struct EventPickupQuery {
+    event_id: String,
+    pickup: String
+}
+
+#[derive(Deserialize)]
+struct VehicleQuery {
+    vehicle_id: String,
+    seats: usize
+}
+
+#[get("/")]
+async fn get_root_rider(s: Session, q: web::Query<EventPickupQuery>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+    let event_id = Uuid::parse_str(q.event_id.clone().as_str()).unwrap();
+    let pickup = q.pickup.clone();
+
+    let conn = db::connect();
+    db::create_ride(&conn, id, event_id, pickup).unwrap();
+
+    HttpResponse::Ok().body(
+        RiderSummaryTemplate {}.render().unwrap()
+    )
+}
+
+#[get("/")]
+async fn get_root_driver(s: Session, q: web::Query<VehicleQuery>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+    let event_id: String = s.get("event_id").unwrap().unwrap();
+    let event_id = Uuid::parse_str(event_id.as_str()).unwrap();
+    let vehicle_id = Uuid::parse_str(q.vehicle_id.clone().as_str()).unwrap();
+    let seats = q.seats;
+
+    let conn = db::connect();
+    db::create_driver(&conn, id, event_id, vehicle_id, seats).unwrap();
+
+    HttpResponse::Ok().body(
+        DriverSummaryTemplate {}.render().unwrap()
+    )
+}
+
 
 #[get("/")]
 async fn get_root(s: Session) -> impl Responder {
@@ -111,23 +162,48 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
     )
 }
 
+#[derive(Deserialize)]
+struct FlowQuery {
+    flow: String
+}
+
 #[get("/events")]
-async fn get_events(s: Session) -> impl Responder {
+async fn get_events(s: Session, flow: web::Query<FlowQuery>) -> impl Responder {
     auth!(s);
+
+    let href = match flow.flow.as_str() {
+        "drive" => "/vehicles",
+        "ride" => "/",
+        _ => {
+            return HttpResponse::SeeOther()
+                .append_header(("Location", "/"))
+                .finish()
+        }
+    }.to_string();
+
+    s.insert("flow", flow.flow.clone()).unwrap();
 
     let conn = db::connect();
     let events = db::get_events(&conn).unwrap();
 
     HttpResponse::Ok().body(
         EventsTemplate {
-            events
+            events,
+            href
         }.render().unwrap()
     )
 }
 
+#[derive(Deserialize)]
+struct EventQuery {
+    event_id: String,
+}
+
 #[get("/vehicles")]
-async fn get_vehicles(s: Session) -> impl Responder {
+async fn get_vehicles(s: Session, q: web::Query<EventQuery>) -> impl Responder {
     auth!(s);
+
+    s.insert("event_id", q.event_id.clone()).unwrap();
 
     let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
@@ -229,9 +305,51 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
 #[get("/manage_events")]
 async fn get_manage_events(s: Session) -> impl Responder {
     auth!(s);
+
     HttpResponse::Ok().body(
         ManageEventsTemplate {}.render().unwrap()
     )
+}
+
+#[derive(Deserialize)]
+struct ManageEventForm {
+    name: String,
+    date: String,
+    time: String,
+    address1: String,
+    address2: Option<String>,
+    city: String,
+    state: String,
+    zipcode: String
+}
+
+#[post("/manage_events")]
+async fn post_manage_events(s: Session, form: web::Form<ManageEventForm>) -> impl Responder {
+    auth!(s);
+
+    let time = NaiveDateTime::parse_from_str(
+        &format!("{} {}", form.date, form.time), "%Y-%m-%d %H:%M"
+    ).unwrap();
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let conn = db::connect();
+    db::create_event(
+        &conn,
+        form.name.clone(),
+        time,
+        form.address1.clone(),
+        form.address2.clone().unwrap_or("".to_string()),
+        form.city.clone(),
+        form.state.clone(),
+        form.zipcode.clone(),
+        id
+    ).unwrap();
+
+    HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish()
 }
 
 #[get("/reset")]
@@ -264,6 +382,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_signup)
             .service(post_signup)
             .service(get_manage_events)
+            .service(post_manage_events)
             .service(get_reset_password)
     })
     .bind(("localhost", 8080))?

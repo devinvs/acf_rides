@@ -145,6 +145,52 @@ pub fn get_driver_passengers(
     Ok(passengers)
 }
 
+pub fn create_driver(
+    conn: &Connection,
+    user_id: Uuid,
+    event_id: Uuid,
+    vehicle_id: Uuid,
+    seats: usize
+) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(
+        include_str!("./sql/create_driver.sql")
+    )?;
+
+    stmt.bind(1, user_id.to_string().as_str())?;
+    stmt.bind(2, event_id.to_string().as_str())?;
+    stmt.bind(3, vehicle_id.to_string().as_str())?;
+    stmt.bind(4, seats as i64)?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+pub fn create_ride(
+    conn: &Connection,
+    user_id: Uuid,
+    event_id: Uuid,
+    pickup_location: String
+) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(
+        include_str!("./sql/create_ride.sql")
+    )?;
+
+    stmt.bind(1, user_id.to_string().as_str())?;
+    stmt.bind(2, event_id.to_string().as_str())?;
+    stmt.bind(3, pickup_location.as_str())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
 // Event Functions
 pub fn create_event(
     conn: &Connection,
@@ -154,7 +200,8 @@ pub fn create_event(
     address2: String,
     city: String,
     state: String,
-    zipcode: String
+    zipcode: String,
+    owner_id: Uuid
 ) -> Result<(), Box<dyn Error>> {
     info!("Create event: {name}");
     let id = Uuid::new_v4().to_string();
@@ -168,6 +215,7 @@ pub fn create_event(
     stmt.bind(6, city.as_str())?;
     stmt.bind(7, state.as_str())?;
     stmt.bind(8, zipcode.as_str())?;
+    stmt.bind(9, owner_id.to_string().as_str())?;
 
     loop {
         let state = stmt.next()?;
