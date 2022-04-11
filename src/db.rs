@@ -95,29 +95,6 @@ pub fn get_user(
     Ok(Some(row.into()))
 }
 
-pub fn get_riders(
-    conn: &Connection,
-    event_id: Uuid,
-    driver_id: Uuid
-) -> Result<Vec<User>, Box<dyn Error>> {
-    info!("Getting riders for driver");
-    let mut cursor = conn.prepare(
-        include_str!("./sql/get_riders.sql")
-    )?.into_cursor();
-
-    cursor.bind(&[
-        Value::String(event_id.to_string()),
-        Value::String(driver_id.to_string())
-    ])?;
-
-    let mut users = Vec::new();
-    while let Some(row) = cursor.next()? {
-        users.push(row.into());
-    }
-
-    Ok(users)
-}
-
 pub fn get_available_drivers(
     conn: &Connection,
     event_id: Uuid,
