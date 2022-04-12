@@ -9,13 +9,16 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
-    <h2>Events</h2>
-    {% for event in events %}
-    <li>
-        <a href="{{href}}?event_id={{event.id}}">
-            {{event.name}}
-        </a>
-    </li>
-    {% endfor %}
+    <div class="summary-box">
+        <h2>Select an Event</h2>
+        <hr width="90%" color="#b51515">
+        {% for event in events %}
+        <li>
+            <a href="{{href}}?event_id={{event.id}}">
+                {{event.name}}
+            </a>
+        </li>
+        {% endfor %}
+    </div>
 </body>
 </html>

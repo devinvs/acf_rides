@@ -25,7 +25,7 @@ h6 {
 }
 
 h1 {
-  font-size: 5em;
+  font-size: 4.5em;
   margin-top: 0.25em;
 }
 
@@ -34,14 +34,15 @@ h3 {
   padding-bottom: 0.3em;
 }
 
-form {
+form, .summary-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #f1c86f;
   border-radius: 0.5em;
   width: 95%;
-  margin-top: 3.5em;
+  margin-top: 2.5em;
+  margin-bottom: 2em;
   padding-top: 1.3em;
   padding-bottom: 1.3em;
   border: #b51515;
@@ -50,7 +51,8 @@ form {
 form input[type="text"],
 form input[type="email"],
 form input[type="password"],
-form input[type="tel"] {
+form input[type="tel"],
+form input[type="number"] {
   border: none;
   outline: none;
 
@@ -59,7 +61,7 @@ form input[type="tel"] {
   border-radius: 0.5em;
   width: 90%;
   margin-top: 1em;
-  margin-bottom: 0.6em;
+  margin-bottom: 1em;
   padding-bottom: 1em;
 }
 
@@ -76,9 +78,22 @@ form input[type="number"]:focus {
   outline-color: #b51515;
 }
 
+form input[type=number]::-webkit-inner-spin-button,
+form input[type=number]::-webkit-inner-spin-button,
+form input[type=number] {
+    -webkit-appearance: none; 
+    margin: 0; 
+    -moz-appearance:textfield;
+}
+
+form input[type=number] {
+    margin-top: 1em;
+}
+
 form input[type="submit"] {
   text-align: center;
   border-radius: 0.5em;
+  margin-top: 1em;
 }
 
 a {
@@ -87,6 +102,10 @@ a {
 
 p {
   margin-top: 0.5em;
+}
+
+li {
+    list-style-type: none
 }
 
 .error {
@@ -105,7 +124,7 @@ p {
   align-self: flex-end;
 }
 
-.summary-box {
+/* .summary-box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,9 +135,9 @@ p {
   margin-bottom: 0.6em;
   padding-top: 1em;
   padding-bottom: 1em;
-}
+} */
 
-.sum-box-child {
+.sum-box-child, li {
   margin: 1em;
   outline-style: double;
   outline-color: black;
@@ -128,7 +147,7 @@ p {
   border-radius: 0.1em;
 }
 
-.sum-box-child:hover {
+.sum-box-child:hover, li:hover {
   outline-color: #b51515;
   transition-timing-function: ease-in-out;
   outline-style: solid;

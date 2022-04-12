@@ -9,14 +9,17 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
-    <h2>Vehicles</h2>
-    {% for vehicle in vehicles %}
-    <li>
-        <a href="/seats?vehicle_id={{vehicle.id}}">
-            {{vehicle.color}} {{vehicle.make}} {{vehicle.model}}
-        </a>
-    </li>
-    {% endfor %}
+    <div class="summary-box">
+        <h3>Select a Vehicle</h3>
+        <hr width="90%" color="#b51515">  
+        {% for vehicle in vehicles %}
+        <li>
+            <a href="/seats?vehicle_id={{vehicle.id}}">
+                {{vehicle.color}} {{vehicle.make}} {{vehicle.model}}
+            </a>
+        </li>
+        {% endfor %}
+    </div>
 
     <form action="/vehicles" method="POST">
         <h3>Add a Vehicle</h3>
