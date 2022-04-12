@@ -1,92 +1,157 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 body {
-    margin: 0;
-    background-color: #fafd90;
-    font-family: sans-serif;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  margin: 0;
+  background-color: #fafd90;
+  font-family: sans-serif;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: #b51515;
-    text-align: center;
-    margin: 2
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #b51515;
+  text-align: center;
+  margin: 2;
 }
 
 h1 {
-    font-size: 5em;
-    margin-top: 0.25em;
+  font-size: 5em;
+  margin-top: 0.25em;
 }
 
-h2, h3 {
-    padding-bottom: 0.3em;
+h2,
+h3 {
+  padding-bottom: 0.3em;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f1c86f;
-    border-radius: 0.5em;
-    width: 95%;
-    margin-top: 3.5em;
-    padding-top: 1.3em;
-    padding-bottom: 1.3em;
-    border: #b51515;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f1c86f;
+  border-radius: 0.5em;
+  width: 95%;
+  margin-top: 3.5em;
+  padding-top: 1.3em;
+  padding-bottom: 1.3em;
+  border: #b51515;
 }
 
-form input[type=text], form input[type=email], form input[type=password], form input[type=tel] {
-    border: none;
-    outline: none;
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="tel"] {
+  border: none;
+  outline: none;
 
-    padding: 8px;
-    margin: 4px;
-    border-radius: 0.5em;
-    width: 90%;
-    margin-top: 1em;
-    margin-bottom: 0.6em;
-    padding-bottom: 1em;
+  padding: 8px;
+  margin: 4px;
+  border-radius: 0.5em;
+  width: 90%;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
+  padding-bottom: 1em;
 }
 
-form input[type=text]:focus, form input[type=email]:focus, form input[type=password]:focus, form input[type=tel]:focus {
-    transition-timing-function: ease-out;
-    transition-duration: 0.25s;
-    outline-style: solid;
-    outline-color: #b51515;
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus,
+form input[type="tel"]:focus,
+form input[type="time"]:focus,
+form input[type="date"]:focus,
+form input[type="number"]:focus {
+  transition-timing-function: ease-out;
+  transition-duration: 0.25s;
+  outline-style: solid;
+  outline-color: #b51515;
 }
 
-form input[type=submit] {
-    text-align: center;
-    border-radius: 0.5em;
+form input[type="submit"] {
+  text-align: center;
+  border-radius: 0.5em;
 }
 
 a {
-    color: #b51515;
+  color: #b51515;
 }
 
 p {
-    margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 .error {
-    color: #b51515;
-    font-style: italic;
+  color: #b51515;
+  font-style: italic;
 }
 
 .box-bottom {
-    width: 80%;
-    display: grid;
-    grid-template-columns: auto auto;
+  width: 80%;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 
 .bottom-text {
-    /* width: 85%; */
-    align-self:flex-end;
-    
+  /* width: 85%; */
+  align-self: flex-end;
+}
+
+.summary-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f1c86f;
+  border-radius: 0.5em;
+  width: 90%;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.sum-box-child {
+  margin: 1em;
+  outline-style: double;
+  outline-color: black;
+  /* padding-top: 1em; */
+  padding: 1em;
+  background-color: white;
+  border-radius: 0.1em;
+}
+
+.sum-box-child:hover {
+  outline-color: #b51515;
+  transition-timing-function: ease-in-out;
+  outline-style: solid;
+  transition-duration: 0.3s;
+}
+.time {
+  display: grid;
+  width: 90%;
+  grid-template-columns: auto auto;
+}
+
+.time,
+form input[type="date"],
+form input[type="time"] {
+  width: auto;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  border: none;
+  outline: none;
+  padding: 4px;
+  /* margin: 4px; */
+  border-radius: 0.5em;
+  width: 90%;
+  /* margin-top: 1em; */
+  margin-bottom: 0.6em;
 }
