@@ -9,8 +9,9 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
-    <h2>Sin Up</h2>
     <form action="/signup" method="post">
+        <h2>Sign Up</h2>
+        <hr width="90%" color="#b51515"> 
         <input type="text" name="name" placeholder="Full Name" required>
         <br>
         <input type="email" name="email" placeholder="Email" required>
@@ -22,15 +23,20 @@
         <input type="tel" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
         placeholder="Phone Number" required>
         <br>
-        Select Campus <select name = "campus" required>
-            <option value = "" ></option>
-            <option value = "RIT" >RIT</option>
-            <option value = "UofR">UofR</option>
-        </select>
+        <div>
+            <p>Select Campus</p> 
+            <select name = "campus" required>
+                <option value = "" ></option>
+                <option value = "RIT" >RIT</option>
+                <option value = "UofR">UofR</option>
+            </select>
+        </div>
         <br>
-        <input type="submit" name="signup" value="Sign Up">
         <p>{{error}}</p>
-        <a href="/login">Sign In Instead</a>
+        <div>
+            <a href="/login">Sign In Instead</a>
+            <input type="submit" name="signup" value="Sign Up">
+        </div>
     </form>
 </body>
 </html>

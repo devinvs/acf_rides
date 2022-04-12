@@ -9,15 +9,18 @@
 </head>
 <body>
     <h1>ACF<br> Rides</h1>
-    <h2>Sign In</h2>
-    <p>{{error}}</p>
     <form action="/login" method="post">
+        <h2>Sign In</h2>
+        <hr width="90%" color="#b51515">  
+        <p>{{error}}</p>
         <input type="email" name="email" placeholder="Email" required>
         <br>
         <input type="password" name="password" placeholder="Password" required>
         <br>
-        <a href="/reset">Forgot Password</a>
-        <input type="submit" value="Login">
+        <div>
+            <a href="/reset">Forgot Password</a>
+            <input type="submit" value="Login">
+        </div>
     </form>
     <a href="/signup">Create an Account</a>
 </body>

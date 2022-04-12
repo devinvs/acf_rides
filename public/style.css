@@ -1,17 +1,29 @@
 * {
     box-sizing: border-box;
+    margin: 0;
+    /* padding-bottom: 1em; */
 }
 
 body {
     margin: 0;
-    background-color: #E281A2;
+    background-color: #fafd90;
     font-family: sans-serif;
     padding: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: maroon;
+    color: #b51515;
     text-align: center;
+    margin: 2
+}
+
+h1 {
+    font-size: 5em;
+}
+
+h2 {
+    /* padding-top: 0.5em; */
+    padding-bottom: 0.3em;
 }
 
 form {
@@ -20,17 +32,36 @@ form {
 
     flex-direction: column;
     align-items: center;
-
+    background-color: #f1c86f;
+    border-radius: 0.5em;
+    margin-top: 4em;
+    padding-top: 1.3em;
+    padding-bottom: 1.3em;
 }
 
-form input[type=text], form input[type=email], form input[type=password] {
+form input[type=text], form input[type=email], form input[type=password], form input[type=tel] {
     border: none;
     outline: none;
 
     padding: 8px;
     margin: 4px;
+    border-radius: 0.5em;
+    width: 90%;
+    margin-top: 1em;
+    margin-bottom: 0.6em;
+    padding-bottom: 1em;
+}
+
+form input[type=submit] {
+    text-align: center;
+    border-radius: 0.5em;
 }
 
 a {
-    color: maroon;
+    color: #b51515;
+}
+
+p {
+    margin-top: 0.5em;
+    /* margin-bottom: 0.3em; */
 }
