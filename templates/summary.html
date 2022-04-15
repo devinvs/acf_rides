@@ -21,6 +21,9 @@
     <div class="summary-box">
         <h2>My Events</h2>
         <hr width="90%" color="#b51515"> 
+        {% for event in events %}
+            <p>{{event.name}}</p>
+        {% endfor %}
     </div>
 </body>
 </html>

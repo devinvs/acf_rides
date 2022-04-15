@@ -279,7 +279,6 @@ pub fn get_driver_vehicles(
     let mut vehicles = Vec::new();
 
     while let Some(row) = cursor.next()? {
-        println!("{:?}", row);
         vehicles.push(row.into());
     }
 
@@ -305,3 +304,34 @@ pub fn get_vehicle(
     Ok(Some(row.into()))
 }
 
+
+pub fn get_driver_events(conn: &Connection, driver_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
+    let mut cursor = conn.prepare(
+        include_str!("./sql/get_driver_events.sql")
+    )?.into_cursor();
+    cursor.bind(&[Value::String(driver_id.to_string())])?;
+
+    let mut events = vec![];
+
+    while let Some(row) = cursor.next()? {
+        events.push(row.into());
+    }
+
+    Ok(events)
+}
+
+pub fn get_rider_events(conn: &Connection, rider_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
+    let mut cursor = conn.prepare(
+        include_str!("./sql/get_rider_events.sql")
+    )?.into_cursor();
+    cursor.bind(&[Value::String(rider_id.to_string())])?;
+
+    let mut events = vec![];
+
+    while let Some(row) = cursor.next()? {
+        events.push(row.into());
+    }
+
+    Ok(events)
+
+}

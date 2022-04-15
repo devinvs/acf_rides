@@ -150,3 +150,4 @@ pub struct Ride {
     pub event_id: Uuid,
     pub pickup_location: String
 }
+

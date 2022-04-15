@@ -21,7 +21,9 @@ struct LoginTemplate {
 
 #[derive(Template)]
 #[template(path = "summary.html")]
-struct SummaryTemplate {}
+struct SummaryTemplate {
+    events: Vec<Event>
+}
 
 #[derive(Template)]
 #[template(path = "events.html")]
@@ -85,7 +87,15 @@ async fn get_css() -> impl Responder {
 async fn get_root(s: Session) -> impl Responder {
     auth!(s);
 
-    HttpResponse::Ok().body(SummaryTemplate {}.render().unwrap())
+    let mut events = vec![];
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let conn = db::connect();
+    events.append(&mut db::get_driver_events(&conn, id).unwrap());
+    events.append(&mut db::get_rider_events(&conn, id).unwrap());
+
+    HttpResponse::Ok().body(SummaryTemplate {events}.render().unwrap())
 }
 
 #[get("/login")]
