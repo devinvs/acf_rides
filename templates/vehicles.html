@@ -18,8 +18,9 @@
     <div class="list-box">
         <h2>Select a Vehicle</h2>
         {% for vehicle in vehicles %}
-        <li class="link-button">
-            <a href="/seats?vehicle_id={{vehicle.id}}">
+        <li>
+            <a href="/seats?vehicle_id={{vehicle.id}}"
+            class="link-button">
                 {{vehicle.color}} {{vehicle.make}} {{vehicle.model}}
             </a>
         </li>

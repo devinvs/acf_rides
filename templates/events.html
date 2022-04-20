@@ -18,11 +18,13 @@
     <div class="list-box">
         <h2>Select an Event</h2>
         {% for event in events %}
-        <li class="link-button">
-            <a href="{{href}}?event_id={{event.id}}">
+        <li>
+            <a href="{{href}}?event_id={{event.id}}"
+            class="link-button">
                 {{event.name}}
                 <br>
-                On {{event.time }}
+                At {{event.time.format("%H:%M tt")}}
+                On {{event.time.format("%A, %B %d") }}
             </a>
         </li>
         {% endfor %}
