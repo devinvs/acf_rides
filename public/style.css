@@ -250,3 +250,35 @@ li {
   margin-top: 0.5em;
   box-shadow:none;
 }
+
+@media only screen and (min-width: 850px) {
+  html {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff4c7;
+    margin-top: 3em;
+    padding-bottom: 4em;
+  }
+  
+  body {
+    width: 50%;
+    margin: 0;
+    padding-top: 3em;
+    padding-bottom: 3em;
+    border-radius: 0.5em;
+    box-shadow: 0px 2px 6px gray;
+  }
+
+  .title h1 {
+    font-size: 8em !important;
+  }
+  
+  .title h2 {
+    font-size:  1.3em !important;
+  }
+
+  form, .list-box, .summary-box {
+    width: 85%;
+  }
+}
