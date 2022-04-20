@@ -163,8 +163,10 @@ li {
 }
 
 .bottom-text {
-  align-self: flex-end;
-  margin-right: 1em;
+  position: relative;
+  top: -1.2em;
+  width: 90%;
+  text-align: right;
 }
 
 .summary-box {
@@ -280,5 +282,9 @@ li {
 
   form, .list-box, .summary-box {
     width: 85%;
+  }
+
+  .bottom-text {
+    width: 80%;
   }
 }
