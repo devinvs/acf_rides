@@ -6,16 +6,23 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
     <link rel="stylesheet" type="text/css" href="/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet"> 
 </head>
 <body>
-    <h1>ACF<br> Rides</h1>
-    <div class="summary-box">
+    <div class="title">
+        <h1>Rides</h1>
+        <h2>Agape Christian Fellowship</h2>
+    </div>
+    <div class="list-box">
         <h2>Select an Event</h2>
-        <hr width="90%" color="#b51515">
         {% for event in events %}
-        <li>
+        <li class="link-button">
             <a href="{{href}}?event_id={{event.id}}">
                 {{event.name}}
+                <br>
+                On {{event.time }}
             </a>
         </li>
         {% endfor %}
