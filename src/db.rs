@@ -335,3 +335,57 @@ pub fn get_rider_events(conn: &Connection, rider_id: Uuid) -> Result<Vec<Event>,
     Ok(events)
 
 }
+
+pub fn delete_user_event(conn: &Connection, user_id: Uuid, event_id: Uuid) -> Result<(), Box<dyn Error>> {
+    info!("Removing user from event");
+
+    let mut remove_rides = conn.prepare(
+        include_str!("./sql/delete_user_rides.sql")
+    )?;
+
+    let mut remove_drives = conn.prepare(
+        include_str!("./sql/delete_user_rides_drives.sql")
+    )?;
+
+    let mut remove_drivers = conn.prepare(
+        include_str!("./sql/delete_user_drives.sql")
+    )?;
+
+    let user_id = user_id.to_string();
+    let event_id = event_id.to_string();
+
+    remove_rides.bind(1, user_id.as_str())?;
+    remove_rides.bind(2, event_id.as_str())?;
+
+    remove_drives.bind(1, user_id.as_str())?;
+    remove_drives.bind(2, event_id.as_str())?;
+
+    remove_drivers.bind(1, user_id.as_str())?;
+    remove_drivers.bind(2, event_id.as_str())?;
+
+    // Begin Transaction
+    conn.execute("BEGIN;")?;
+
+    // Remove Rides
+    loop {
+        let state = remove_rides.next()?;
+        if state==State::Done { break; }
+    }
+
+    // Remove Drives
+    loop {
+        let state = remove_drives.next()?;
+        if state==State::Done { break; }
+    }
+
+    // Remove drivers
+    loop {
+        let state = remove_drivers.next()?;
+        if state == State::Done { break; }
+    }
+
+    // End Transaction
+    conn.execute("COMMIT;")?;
+
+    Ok(())
+}

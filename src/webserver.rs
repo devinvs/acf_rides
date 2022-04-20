@@ -406,6 +406,28 @@ async fn get_reset_password() -> impl Responder {
     ResetPasswordTemplate {}.render().unwrap()
 }
 
+#[derive(Debug, Deserialize)]
+struct DeleteQuery {
+    event_id: String
+}
+
+#[post("/events/delete")]
+async fn delete_event(s: Session, q: web::Query<DeleteQuery>) -> impl Responder {
+    auth!(s);
+
+    let id: String = s.get("user_id").unwrap().unwrap();
+    let id = Uuid::parse_str(id.as_str()).unwrap();
+
+    let event_id = Uuid::parse_str(q.event_id.as_str()).unwrap();
+
+    let conn = db::connect();
+    db::delete_user_event(&conn, id, event_id).unwrap();
+
+    HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish()
+}
+
 pub async fn start() -> std::io::Result<()> {
     info!("Starting Webserver");
 
@@ -438,6 +460,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_seats)
             .service(post_seats)
             .service(get_css)
+            .service(delete_event)
     })
     .bind(("localhost", 8080))?
     .run()
