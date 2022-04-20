@@ -23,8 +23,9 @@
             class="link-button">
                 {{event.name}}
                 <br>
-                At {{event.time.format("%H:%M tt")}}
-                On {{event.time.format("%A, %B %d") }}
+                {{event.time.format("%l:%M %p")}}
+                <br>
+                {{event.time.format("%A, %B %d") }}
             </a>
         </li>
         {% endfor %}
