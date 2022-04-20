@@ -214,7 +214,6 @@ li {
 .display-sum {
   display: flex;
   flex-direction: column;
-  /* justify-content:space-between;  */
   align-items: center;
   text-align: center;
   background-color: #face7f;
