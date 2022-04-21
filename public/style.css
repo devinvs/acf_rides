@@ -249,7 +249,20 @@ li {
   box-shadow: 0px 1px 4px gray;
 }
 
+.display-sum form {
+  margin: 0;
+  padding: 0;
+  margin-top: 0.5em;
+  box-shadow:none;
+  width: 100%;
+  align-items: flex-end;
+  margin-bottom: 0.8em;
+}
 
+.display-sum form input[type="submit"] {
+  width: fit-content !important;
+  min-width: 40px !important;
+}
 
 .event-sum {
   display: flex;
@@ -267,19 +280,17 @@ li {
   font-size: 0.8em;
 }
 
-.display-sum form {
-  margin: 0;
-  padding: 0;
-  margin-top: 0.5em;
-  box-shadow:none;
-  width: 100%;
-  align-items: flex-end;
-  margin-bottom: 0.5em;
-}
+.summary-side {
+  width: 60%;
+  background-color: #ffe2ac;
+  border-radius: 0.5em;
+  padding-top: 0.2em;
+  padding-bottom: 1.3em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  margin-left: 1.5em;
+  box-shadow: 0px 1px 4px gray;
 
-.display-sum form input[type="submit"] {
-  width: fit-content !important;
-  min-width: 40px !important;
 }
 
 @media only screen and (min-width: 850px) {
