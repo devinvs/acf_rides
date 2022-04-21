@@ -26,20 +26,22 @@
         <h2>My Events</h2>
         {% for event in events %}
             <div class="display-sum">
+                <form action="/events/delete?event_id={{event.id}}" method="post">
+                    <input type="submit" value="X">
+                </form>
                 <div class="event-sum">
                     <div >
                         <p class="event-info-color-main">{{event.name}}</p>
                         <p class="event-info-color">{{event.time.format("%l:%M %p")}}</p>
                         <p class="event-info-color">{{event.time.format("%A, %B %d") }}</p>
+                        <p class="event-info-color">{{event.address1}}</p>
+                        <p class="event-info-color">{{event.city}}, {{event.state}} {{event.zipcode}}</p>
                     </div>
                     <div >
                         <p event-info-color-main>Driver Rider Summary Place Holder</p>
                         <!-- Driver rider summary -->
                     </div>
                 </div>
-                <form action="/events/delete?event_id={{event.id}}" method="post">
-                    <input type="submit" value="Delete Event">
-                </form>
             </div>
         {% endfor %}
     </div>

@@ -59,11 +59,6 @@ h3 {
   top: -25px;
 }
 
-.forgot-password {
-  position: relative;
-  top: 2px;
-}
-
 .time {
   display: grid;
   width: 90%;
@@ -139,6 +134,27 @@ form input[type=number] {
     margin-top: 1em;
 }
 
+
+form input[type="submit"] {
+  background-color: #911f27;
+  color: white;
+  border-radius: 0.5em;
+  box-shadow: 0px 1px 4px gray;
+  padding: 8px;
+  width: fit-content;
+  min-width: 150px;
+  border: none;
+}
+
+form input[type="submit"]:hover {
+  background-color: #b32c35;
+}
+
+form input[type="submit"]:active {
+  background-color: #b32c35;
+  box-shadow: 0px 0.5px 2px gray;
+}
+
 a {
   color: #911f27;
   text-decoration:none;
@@ -159,8 +175,10 @@ li {
 
 .box-bottom {
   width: 80%;
-  display: grid;
-  grid-template-columns: auto auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content:space-between;
 }
 
 .bottom-text {
@@ -224,12 +242,14 @@ li {
   width: 100%;
   margin-top: 2.5em;
   margin-bottom: 2em;
-  padding-top: 1.3em;
+  padding-top: 0.2em;
   padding-bottom: 1.3em;
   padding-left: 0.5em;
   padding-right: 0.5em;
   box-shadow: 0px 1px 4px gray;
 }
+
+
 
 .event-sum {
   display: flex;
@@ -252,6 +272,14 @@ li {
   padding: 0;
   margin-top: 0.5em;
   box-shadow:none;
+  width: 100%;
+  align-items: flex-end;
+  margin-bottom: 0.5em;
+}
+
+.display-sum form input[type="submit"] {
+  width: fit-content !important;
+  min-width: 40px !important;
 }
 
 @media only screen and (min-width: 850px) {
@@ -259,7 +287,7 @@ li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #fff4c7;
+    background-color: #fbedb6;
     margin-top: 3em;
     padding-bottom: 4em;
   }
@@ -288,3 +316,5 @@ li {
     width: 80%;
   }
 }
+
+
