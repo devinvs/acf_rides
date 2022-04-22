@@ -1,0 +1,13 @@
+Manage Events
+    - Display controlled events
+    - Delete controlled events
+
+Summary
+    - Get event metaobject
+    - Display ride/drive info
+
+Backend Thread
+    - Assign Rides
+    - Delete old events
+
+- INVITES!!!
