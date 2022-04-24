@@ -322,13 +322,19 @@ async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 struct SignupQuery {
-    invite_id: String
+    invite_id: Option<String>
 }
 
 #[get("/signup")]
 async fn get_signup(q: web::Query<SignupQuery>) -> impl Responder {
 
-    let invite_id = Uuid::parse_str(&q.invite_id).unwrap();
+    if q.invite_id.is_none() {
+        return HttpResponse::SeeOther()
+            .append_header(("location", "/"))
+            .finish();
+    }
+
+    let invite_id = Uuid::parse_str(q.invite_id.as_ref().unwrap()).unwrap();
     if invite_id != *INVITE_ID {
         return HttpResponse::SeeOther()
             .append_header(("location", "/"))
