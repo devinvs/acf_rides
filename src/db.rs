@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Local, Duration};
 use sqlite::{Connection, Value, State};
 use uuid::Uuid;
 use log::info;
@@ -386,6 +386,62 @@ pub fn delete_user_event(conn: &Connection, user_id: Uuid, event_id: Uuid) -> Re
 
     // End Transaction
     conn.execute("COMMIT;")?;
+
+    Ok(())
+}
+
+pub fn delete_expired_invites(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(include_str!("./sql/delete_expired_invites.sql"))?;
+
+    let now = Local::now().timestamp();
+    stmt.bind(1, now)?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+pub fn delete_expired_events(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(include_str!("./sql/delete_expired_events.sql"))?;
+
+    let now = Local::now();
+    let expires = now - Duration::days(1);
+
+    stmt.bind(1, expires.timestamp())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+pub fn delete_event(conn: &Connection, id: Uuid) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(include_str!("./sql/delete_event.sql"))?;
+
+    stmt.bind(1, id.to_string().as_str())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+pub fn get_invite(conn: &Connection, id: Uuid) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(include_str!("./sql/get_invite.sql"))?;
+
+    stmt.bind(1, id.to_string().as_str())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
 
     Ok(())
 }

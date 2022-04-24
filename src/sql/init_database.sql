@@ -49,3 +49,7 @@ CREATE TABLE drivers (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE
 );
 
+CREATE TABLE invites (
+    id TEXT,
+    expires INTEGER
+);

@@ -292,6 +292,10 @@ async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
         .finish()
 }
 
+struct InviteQuery {
+    invite_id: String
+}
+
 #[get("/signup")]
 async fn get_signup() -> impl Responder {
     SignupTemplate {
