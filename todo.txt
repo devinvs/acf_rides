@@ -1,3 +1,5 @@
+Backend:
+
 Manage Events
     - Display controlled events
     - Delete controlled events
@@ -10,4 +12,6 @@ Backend Thread
     - Assign Rides
     - Delete old events
 
-- INVITES!!!
+Frontend:
+    - Interactive cursor on delete hover
+    - Spacing!

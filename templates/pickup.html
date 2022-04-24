@@ -18,6 +18,11 @@
     <form action="/pickup" method="POST">
         <h2>Where Do You Want to Be Picked Up?</h2>
         <hr width="90%" color="#b51515">
+        <select name="campus" required>
+            <option value = "" />
+            <option value = "RIT">RIT</option>
+            <option value = "UofR">UofR</option>
+        </select>
         <input type="text" name="pickup" placeholder="Pickup Location" required />
         <input type="submit" value="submit"/>
     </form>

@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="title">
@@ -16,8 +16,13 @@
         <h2>Agape Christian Fellowship</h2>
     </div>
     <form action="/seats" method="POST">
-        <h2>How Many Seats Do Have Available?</h2>
-        <hr width="90%" color="#b51515">
+        <h2>Campus</h2>
+        <select name="campus" required>
+            <option value = "" />
+            <option value = "RIT">RIT</option>
+            <option value = "UofR">UofR</option>
+        </select>
+        <h2>Available Seats</h2>
         <input type="text" name="seats" placeholder="Seats" required />
         <input type="submit" value="submit" />
     </form>
