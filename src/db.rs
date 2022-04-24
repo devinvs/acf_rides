@@ -8,8 +8,12 @@ use std::error::Error;
 
 use crate::models::{User, Campus, Event, Vehicle, Driver};
 
+/// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
 
+/// Check if the database exists.
+/// If not, create the database and run the init script
+/// to create the database schema
 pub fn create_database() {
     info!("Checking for Database");
     let path = Path::new(DB_PATH);
@@ -22,11 +26,14 @@ pub fn create_database() {
     }
 }
 
+/// Create a connection to the database
 pub fn connect() -> Connection {
     sqlite::open(DB_PATH).unwrap()
 }
 
 // Funcions for interacting with Users
+
+/// Create a new user
 pub fn create_user(
     conn: &Connection,
     email: String,
@@ -58,6 +65,7 @@ pub fn create_user(
     Ok(())
 }
 
+/// Search for a user by their email
 pub fn get_user_by_email(
     conn: &Connection,
     email: String
@@ -76,6 +84,7 @@ pub fn get_user_by_email(
     Ok(Some(row.into()))
 }
 
+/// Get a user by their id
 pub fn get_user(
     conn: &Connection,
     id: Uuid
@@ -95,6 +104,7 @@ pub fn get_user(
     Ok(Some(row.into()))
 }
 
+/// Get a list of all drivers for a given event
 pub fn get_available_drivers(
     conn: &Connection,
     event_id: Uuid,
@@ -121,6 +131,7 @@ pub fn get_available_drivers(
     Ok(drivers)
 }
 
+/// Get a list of all passengers of a driver for a single event
 pub fn get_driver_passengers(
     conn: &Connection,
     event_id: Uuid,
@@ -145,6 +156,7 @@ pub fn get_driver_passengers(
     Ok(passengers)
 }
 
+/// Create a driver for an event
 pub fn create_driver(
     conn: &Connection,
     user_id: Uuid,
@@ -169,6 +181,7 @@ pub fn create_driver(
     Ok(())
 }
 
+/// Create a ride for a given event
 pub fn create_ride(
     conn: &Connection,
     user_id: Uuid,
@@ -193,6 +206,8 @@ pub fn create_ride(
 }
 
 // Event Functions
+
+/// Create a new event
 pub fn create_event(
     conn: &Connection,
     name: String,
@@ -226,6 +241,7 @@ pub fn create_event(
     Ok(())
 }
 
+/// Get a list of upcoming events
 pub fn get_events(conn: &Connection) -> Result<Vec<Event>, Box<dyn Error>> {
     info!("Get events");
     let mut cursor = conn.prepare(
@@ -240,6 +256,8 @@ pub fn get_events(conn: &Connection) -> Result<Vec<Event>, Box<dyn Error>> {
 }
 
 // Vehicles functions
+
+/// Create a new vehicle for a driver
 pub fn create_vehicle(
     conn: &Connection,
     user_id: Uuid,
@@ -266,6 +284,7 @@ pub fn create_vehicle(
     Ok(())
 }
 
+/// Get all vehicles for a driver
 pub fn get_driver_vehicles(
     conn: &Connection,
     driver_id: Uuid
@@ -285,6 +304,7 @@ pub fn get_driver_vehicles(
     Ok(vehicles)
 }
 
+/// Get vehicle information from its id
 pub fn get_vehicle(
     conn: &Connection,
     id: Uuid
@@ -304,7 +324,7 @@ pub fn get_vehicle(
     Ok(Some(row.into()))
 }
 
-
+/// Get all events that a user is driving
 pub fn get_driver_events(conn: &Connection, driver_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
     let mut cursor = conn.prepare(
         include_str!("./sql/get_driver_events.sql")
@@ -320,6 +340,7 @@ pub fn get_driver_events(conn: &Connection, driver_id: Uuid) -> Result<Vec<Event
     Ok(events)
 }
 
+/// Get all events a user is getting a ride
 pub fn get_rider_events(conn: &Connection, rider_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
     let mut cursor = conn.prepare(
         include_str!("./sql/get_rider_events.sql")
@@ -333,9 +354,10 @@ pub fn get_rider_events(conn: &Connection, rider_id: Uuid) -> Result<Vec<Event>,
     }
 
     Ok(events)
-
 }
 
+/// Delete a user from an event, whether they are a rider or a driver.
+/// Does not delete events for everyone, only removes a user from it
 pub fn delete_user_event(conn: &Connection, user_id: Uuid, event_id: Uuid) -> Result<(), Box<dyn Error>> {
     info!("Removing user from event");
 

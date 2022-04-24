@@ -2,8 +2,12 @@ use sqlite::Value;
 use uuid::Uuid;
 use chrono::NaiveDateTime;
 
+/// Available campus locations
+/// A driver can only give rides for people on their campus
 pub enum Campus {
+    /// Rochester Institute of Technology
     RIT,
+    /// University of Rochester
     UofR
 }
 
@@ -25,12 +29,18 @@ impl Into<&'static str> for Campus {
     }
 }
 
+/// A User of the App
+/// Can act as a driver or a rider
 pub struct User {
+    /// Unique User ID
     pub id: Uuid,
     pub email: String,
     pub fullname: String,
+    /// Hashed using BCrypt
     pub password: String,
+    /// Phone Number
     pub number: String,
+    /// Current limitation is that a user can only be located at a single campus
     pub campus: Campus
 }
 
@@ -54,6 +64,8 @@ impl From<&[Value]> for User {
     }
 }
 
+/// A single event that people need rides from/can provide rides to
+/// Events that have passed will be deleted by a background thread
 pub struct Event {
     pub id: Uuid,
     pub name: String,
@@ -63,6 +75,7 @@ pub struct Event {
     pub city: String,
     pub state: String,
     pub zipcode: String,
+    /// ID of the user who created and can delete this event
     pub creator_id: Uuid
 }
 
@@ -95,6 +108,7 @@ impl From<&[Value]> for Event {
     }
 }
 
+/// Information about a driver's vehicle
 pub struct Vehicle {
     pub id: Uuid,
     pub owner_id: Uuid,
@@ -121,10 +135,15 @@ impl From<&[Value]> for Vehicle {
     }
 }
 
+/// A driver for a single event.
 pub struct Driver {
+    /// The event id that the driver will drive for
     pub event_id: Uuid,
+    /// The user id of the driver
     pub driver_id: Uuid,
+    /// Number of seats available
     pub seats: i64,
+    /// Vehicle id of the vehicle the driver will be driving
     pub vehicle_id: Uuid,
 }
 
@@ -144,10 +163,15 @@ impl From<&[Value]> for Driver {
     }
 }
 
+/// A single ride for a single event
 pub struct Ride {
+    /// The user id of the rider
     pub rider_id: Uuid,
+    /// The user id of the driver
     pub driver_id: Option<Uuid>,
+    /// The id of the event
     pub event_id: Uuid,
+    /// The location the rider wants to be picked up
     pub pickup_location: String
 }
 
