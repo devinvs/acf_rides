@@ -17,3 +17,5 @@ bcrypt = "*"
 serde = {version="*", features=["derive"]}
 askama_actix = "0.13"
 askama = {version="0.11", features=["with-actix-web"]}
+dotenv = "0.15"
+lazy_static = "1"

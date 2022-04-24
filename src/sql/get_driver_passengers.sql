@@ -4,7 +4,7 @@ SELECT
     u.fullname,
     u.password,
     u.number,
-    u.campus,
+    r.campus,
     r.pickup_location
 FROM rides r
     LEFT JOIN users u ON u.id = r.rider_id

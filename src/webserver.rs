@@ -11,6 +11,29 @@ use crate::models::{Campus, Event, Vehicle};
 use askama::Template;
 use std::fs::File;
 use std::io::Read;
+use std::env;
+
+use lazy_static::lazy_static;
+
+// Secret Invite ID, loaded from environment variables
+lazy_static! {
+    static ref INVITE_ID: Uuid = {
+        env::vars()
+            .filter_map(|(key, val)| {
+                if key=="INVITE_ID" {
+                    if let Ok(id) = Uuid::parse_str(&val) {
+                        Some(id)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            })
+            .next()
+            .unwrap_or(Uuid::new_v4())
+    };
+}
 
 // Templates
 #[derive(Template)]
@@ -179,6 +202,7 @@ async fn get_pickup(s: Session, q: web::Query<EventQuery>) -> impl Responder {
 
 #[derive(Deserialize)]
 struct PickupData {
+    campus: String,
     pickup: String
 }
 
@@ -192,10 +216,11 @@ async fn post_pickup(s: Session, form: web::Form<PickupData>) -> impl Responder 
     let event_id: String = s.get("event_id").unwrap().unwrap();
     let event_id = Uuid::parse_str(event_id.as_str()).unwrap();
 
+    let campus: Campus = form.campus.as_str().into();
     let pickup = form.pickup.clone();
 
     let conn = db::connect();
-    db::create_ride(&conn, id, event_id, pickup).unwrap();
+    db::create_ride(&conn, id, event_id, campus, pickup).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -268,6 +293,7 @@ async fn get_seats(s: Session, q: web::Query<VehicleQuery>) -> impl Responder {
 
 #[derive(Deserialize)]
 struct SeatsData {
+    campus: String,
     seats: usize
 }
 
@@ -284,19 +310,35 @@ async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
     let vehicle_id: String = s.get("vehicle_id").unwrap().unwrap();
     let vehicle_id = Uuid::parse_str(vehicle_id.as_str()).unwrap();
 
+    let campus: Campus = form.campus.as_str().into();
+
     let conn = db::connect();
-    db::create_driver(&conn, id, event_id, vehicle_id, form.seats).unwrap();
+    db::create_driver(&conn, id, event_id, vehicle_id, form.seats, campus).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
         .finish()
 }
 
+#[derive(Debug, Deserialize)]
+struct SignupQuery {
+    invite_id: String
+}
+
 #[get("/signup")]
-async fn get_signup() -> impl Responder {
-    SignupTemplate {
-        error: "".into()
+async fn get_signup(q: web::Query<SignupQuery>) -> impl Responder {
+
+    let invite_id = Uuid::parse_str(&q.invite_id).unwrap();
+    if invite_id != *INVITE_ID {
+        return HttpResponse::SeeOther()
+            .append_header(("location", "/"))
+            .finish();
     }
+
+    HttpResponse::Ok()
+        .body(SignupTemplate {
+                error: "".into()
+        }.render().unwrap())
 }
 
 #[derive(Deserialize)]
@@ -312,22 +354,21 @@ struct SignupFormData {
 #[post("/signup")]
 async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Responder {
 
-    if !form.email.ends_with("@rit.edu")
-    && !form.email.ends_with("@g.rit.edu")
-    && !form.email.ends_with("@u.rochester.edu") {
-        return HttpResponse::Ok().body(
-            SignupTemplate {
-                error: "Must have a .edu email".into()
-            }.render().unwrap()
-        );
-    }
-
     if form.password != form.confirm_password {
         return HttpResponse::Ok().body(
             SignupTemplate {
                 error: "Passwords do not match".into()
             }.render().unwrap()
         );
+    }
+
+    if form.password.len() < 8 {
+        return HttpResponse::Ok()
+            .body(
+                SignupTemplate {
+                    error: "Password must be 8 characters or more".into()
+                }.render().unwrap()
+            )
     }
 
     let campus: Campus = form.campus.as_str().into();

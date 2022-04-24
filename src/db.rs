@@ -162,16 +162,20 @@ pub fn create_driver(
     user_id: Uuid,
     event_id: Uuid,
     vehicle_id: Uuid,
-    seats: usize
+    seats: usize,
+    campus: Campus
 ) -> Result<(), Box<dyn Error>> {
     let mut stmt = conn.prepare(
         include_str!("./sql/create_driver.sql")
     )?;
 
+    let campus: &str = campus.into();
+
     stmt.bind(1, user_id.to_string().as_str())?;
     stmt.bind(2, event_id.to_string().as_str())?;
     stmt.bind(3, vehicle_id.to_string().as_str())?;
     stmt.bind(4, seats as i64)?;
+    stmt.bind(5, campus)?;
 
     loop {
         let state = stmt.next()?;
@@ -186,6 +190,7 @@ pub fn create_ride(
     conn: &Connection,
     user_id: Uuid,
     event_id: Uuid,
+    campus: Campus,
     pickup_location: String
 ) -> Result<(), Box<dyn Error>> {
     info!("Create Ride");
@@ -193,9 +198,12 @@ pub fn create_ride(
         include_str!("./sql/create_ride.sql")
     )?;
 
+    let campus: &str = campus.into();
+
     stmt.bind(1, user_id.to_string().as_str())?;
     stmt.bind(2, event_id.to_string().as_str())?;
-    stmt.bind(3, pickup_location.as_str())?;
+    stmt.bind(3, campus)?;
+    stmt.bind(4, pickup_location.as_str())?;
 
     loop {
         let state = stmt.next()?;

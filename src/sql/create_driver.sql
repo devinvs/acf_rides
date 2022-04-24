@@ -2,5 +2,6 @@ INSERT INTO drivers (
     driver_id,
     event_id,
     vehicle_id,
-    seats
-) VALUES (?, ?, ?, ?);
+    seats,
+    campus
+) VALUES (?, ?, ?, ?, ?);

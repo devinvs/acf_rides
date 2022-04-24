@@ -40,7 +40,7 @@ pub struct User {
     pub password: String,
     /// Phone Number
     pub number: String,
-    /// Current limitation is that a user can only be located at a single campus
+    /// Default campus for a user
     pub campus: Campus
 }
 
@@ -145,6 +145,8 @@ pub struct Driver {
     pub seats: i64,
     /// Vehicle id of the vehicle the driver will be driving
     pub vehicle_id: Uuid,
+    /// Campus the driver will be driving from
+    pub campus: Campus
 }
 
 impl From<&[Value]> for Driver {
@@ -154,11 +156,14 @@ impl From<&[Value]> for Driver {
         let seats = row[2].as_integer().unwrap();
         let vehicle_id = Uuid::parse_str(row[3].as_string().unwrap()).unwrap();
 
+        let campus: Campus = row[4].as_string().unwrap().into();
+
         Driver {
             event_id,
             driver_id,
             seats,
-            vehicle_id
+            vehicle_id,
+            campus
         }
     }
 }
@@ -171,6 +176,8 @@ pub struct Ride {
     pub driver_id: Option<Uuid>,
     /// The id of the event
     pub event_id: Uuid,
+    /// The campus to be picked up from
+    pub campus: Campus,
     /// The location the rider wants to be picked up
     pub pickup_location: String
 }

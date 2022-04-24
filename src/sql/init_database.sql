@@ -25,6 +25,7 @@ CREATE TABLE rides (
     driver_id TEXT,
     event_id TEXT,
     pickup_location TEXT,
+    campus TEXT,
     FOREIGN KEY (rider_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (driver_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
@@ -44,6 +45,7 @@ CREATE TABLE drivers (
     driver_id TEXT,
     seats INTEGER,
     vehicle_id TEXT,
+    campus TEXT,
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
     FOREIGN KEY (driver_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE
