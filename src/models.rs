@@ -151,19 +151,3 @@ pub struct Ride {
     pub pickup_location: String
 }
 
-pub struct Invite {
-    pub id: Uuid,
-    pub expires: NaiveDateTime
-}
-
-impl From<&[Value]> for Invite {
-    fn from(row: &[Value]) -> Self {
-        let id = Uuid::parse_str(row[0].as_string().unwrap()).unwrap();
-        let expires = NaiveDateTime::from_timestamp(row[1].as_integer().unwrap(), 0);
-
-        Invite {
-            id,
-            expires
-        }
-    }
-}
