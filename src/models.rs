@@ -108,6 +108,15 @@ impl From<&[Value]> for Event {
     }
 }
 
+/// Event Metaobject, containing all information that a driver/rider would need
+pub struct EventData {
+    pub event: Event,
+    /// List of tuples of riders and their pickup location
+    pub riders: Option<Vec<(User, String)>>,
+    /// Tuple of Drivers and their vehicle
+    pub driver: Option<(User, Vehicle)>
+}
+
 /// Information about a driver's vehicle
 pub struct Vehicle {
     pub id: Uuid,
@@ -182,3 +191,24 @@ pub struct Ride {
     pub pickup_location: String
 }
 
+impl From<&[Value]> for Ride {
+    fn from(row: &[Value]) -> Self {
+        let rider_id = Uuid::parse_str(row[0].as_string().unwrap()).unwrap();
+        let driver_id = if row[1] == Value::Null {
+            None
+        } else {
+            Some(Uuid::parse_str(row[1].as_string().unwrap()).unwrap())
+        };
+        let event_id = Uuid::parse_str(row[2].as_string().unwrap()).unwrap();
+        let campus: Campus = row[3].as_string().unwrap().into();
+        let pickup_location = row[4].as_string().unwrap().to_string();
+
+        Ride {
+            rider_id,
+            driver_id,
+            event_id,
+            campus,
+            pickup_location
+        }
+    }
+}

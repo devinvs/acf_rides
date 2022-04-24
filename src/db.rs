@@ -6,7 +6,7 @@ use log::info;
 use std::path::Path;
 use std::error::Error;
 
-use crate::models::{User, Campus, Event, Vehicle, Driver};
+use crate::models::{User, Campus, Event, Vehicle, Driver, EventData};
 
 /// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
@@ -418,4 +418,40 @@ pub fn delete_user_event(conn: &Connection, user_id: Uuid, event_id: Uuid) -> Re
     conn.execute("COMMIT;")?;
 
     Ok(())
+}
+
+/// Get Driver information for an event
+fn get_event_driver(conn: &Connection, event_id: Uuid, user_id: Uuid) -> Result<Option<(User, Vehicle)>, Box<dyn Error>> {
+    let mut cursor = conn.prepare(include_str!("./sql/get_event_driver.sql"))?.into_cursor();
+
+    cursor.bind(&[Value::String(event_id.to_string()), Value::String(user_id.to_string())])?;
+    let row = cursor.next()?;
+
+    Ok(row.map(|row| {
+        (row.into(), row[6..].into())
+    }))
+}
+
+/// Get all information about an event for a given user
+pub fn get_events_data(conn: &Connection, user_id: Uuid) -> Result<Vec<EventData>, Box<dyn Error>> {
+    let mut event_data = Vec::new();
+
+    for event in get_events(conn)? {
+        let riders = get_driver_passengers(conn, event.id, user_id)?;
+        let driver = get_event_driver(conn, event.id, user_id)?;
+
+        let riders = if riders.len() == 0 {
+            None
+        } else {
+            Some(riders)
+        };
+
+        event_data.push(EventData {
+            riders,
+            driver,
+            event
+        });
+    }
+
+    Ok(event_data)
 }

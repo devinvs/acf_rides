@@ -115,8 +115,7 @@ async fn get_root(s: Session) -> impl Responder {
     let id = Uuid::parse_str(id.as_str()).unwrap();
 
     let conn = db::connect();
-    events.append(&mut db::get_driver_events(&conn, id).unwrap());
-    events.append(&mut db::get_rider_events(&conn, id).unwrap());
+    let events_data = db::get_events_data(&conn, id).unwrap();
 
     HttpResponse::Ok().body(SummaryTemplate {events}.render().unwrap())
 }

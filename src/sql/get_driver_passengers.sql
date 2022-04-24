@@ -8,5 +8,5 @@ SELECT
     r.pickup_location
 FROM rides r
     LEFT JOIN users u ON u.id = r.rider_id
-WHERE r.event_id = '?'
-    AND r.driver_id = '?';
+WHERE r.event_id = ?
+    AND r.driver_id = ?;
