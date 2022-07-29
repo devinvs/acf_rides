@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 sqlite = "0.26"
 log = "0.4"
+tokio = "1"
 actix-web = "4"
 actix-session = {version="0.6", features=["cookie-session"]}
 simple_logger = "2"

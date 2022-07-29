@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Local};
 use sqlite::{Connection, Value, State};
 use uuid::Uuid;
 use log::info;
@@ -454,4 +454,32 @@ pub fn get_events_data(conn: &Connection, user_id: Uuid) -> Result<Vec<EventData
     }
 
     Ok(event_data)
+}
+
+/// Delete old events in the database
+pub fn delete_old_events(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    let mut remove_events = conn.prepare(
+        include_str!("./sql/delete_old_events.sql")
+    )?;
+
+    let expire_time = (Local::now() - chrono::Duration::days(1)).timestamp();
+    remove_events.bind(1, expire_time)?;
+
+    loop {
+        let state = remove_events.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+/// Pair riders with rides
+pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    // Begin Transaction
+    conn.execute("BEGIN;")?;
+
+
+    // End Transaction
+    conn.execute("COMMIT;")?;
+    Ok(())
 }
