@@ -29,6 +29,15 @@ impl Into<&'static str> for Campus {
     }
 }
 
+impl Into<String> for Campus {
+    fn into(self) -> String {
+        match self {
+            Campus::RIT => String::from("RIT"),
+            Campus::UofR => String::from("UR")
+        }
+    }
+}
+
 /// A User of the App
 /// Can act as a driver or a rider
 pub struct User {
@@ -150,7 +159,7 @@ pub struct Driver {
     pub event_id: Uuid,
     /// The user id of the driver
     pub driver_id: Uuid,
-    /// Number of seats available
+    /// Number of total seats
     pub seats: i64,
     /// Vehicle id of the vehicle the driver will be driving
     pub vehicle_id: Uuid,
@@ -164,7 +173,6 @@ impl From<&[Value]> for Driver {
         let driver_id = Uuid::parse_str(row[1].as_string().unwrap()).unwrap();
         let seats = row[2].as_integer().unwrap();
         let vehicle_id = Uuid::parse_str(row[3].as_string().unwrap()).unwrap();
-
         let campus: Campus = row[4].as_string().unwrap().into();
 
         Driver {

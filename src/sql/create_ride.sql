@@ -1,6 +1,6 @@
 INSERT INTO rides (
     rider_id,
     event_id,
-    pickup_location,
-    campus
+    campus,
+    pickup_location
 ) VALUES (?, ?, ?, ?);

@@ -6,7 +6,7 @@ use log::info;
 use std::path::Path;
 use std::error::Error;
 
-use crate::models::{User, Campus, Event, Vehicle, Driver, EventData};
+use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride};
 
 /// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
@@ -109,7 +109,7 @@ pub fn get_available_drivers(
     conn: &Connection,
     event_id: Uuid,
     campus: Campus,
-) -> Result<Vec<Driver>, Box<dyn Error>> {
+) -> Result<Vec<(Driver, i64)>, Box<dyn Error>> {
     info!("Getting available drivers for event");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_available_drivers.sql")
@@ -125,7 +125,7 @@ pub fn get_available_drivers(
     let mut drivers = Vec::new();
 
     while let Some(row) = cursor.next()? {
-        drivers.push(row.into());
+        drivers.push((row.into(), row[5].as_integer().unwrap()));
     }
 
     Ok(drivers)
@@ -478,8 +478,63 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
     // Begin Transaction
     conn.execute("BEGIN;")?;
 
+    let events = get_events(&conn)?;
+    for event in events {
+        let rit_rides = unassigned_campus_riders(&conn, event.id, Campus::RIT)?;
+
+        for ride in rit_rides {
+            let mut driver_index = 0;
+            let rit_drivers = get_available_drivers(&conn, event.id, Campus::RIT)?;
+            if driver_index >= rit_drivers.len() {
+                break;
+            }
+
+            while rit_drivers[driver_index].0.seats - rit_drivers[driver_index].1 <= 0 {
+                driver_index += 1;
+            }
+            println!("Assign???");
+
+            assign_ride(&conn, event.id, ride.rider_id, rit_drivers[driver_index].0.driver_id)?;
+        }
+    }
 
     // End Transaction
     conn.execute("COMMIT;")?;
     Ok(())
+}
+
+/// Assign rider to driver for an event
+fn assign_ride(conn: &Connection, event_id: Uuid, rider_id: Uuid, driver_id: Uuid) -> Result<(), Box<dyn Error>> {
+    let mut assign_rider = conn.prepare(
+        include_str!("./sql/assign_rider.sql")
+    )?;
+
+    let driver_id = driver_id.to_string();
+    let rider_id = rider_id.to_string();
+    let event_id = event_id.to_string();
+
+    assign_rider.bind(1, driver_id.as_str())?;
+    assign_rider.bind(2, event_id.as_str())?;
+    assign_rider.bind(3, rider_id.as_str())?;
+
+    loop {
+        let state = assign_rider.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
+}
+
+/// Get list of unassigned riders for an event on a campus
+fn unassigned_campus_riders(conn: &Connection, event_id: Uuid, campus: Campus) -> Result<Vec<Ride>, Box<dyn Error>> {
+    let mut cursor = conn.prepare(include_str!("./sql/get_unassigned_riders.sql"))?.into_cursor();
+    cursor.bind(&[Value::String(event_id.to_string()), Value::String(campus.into())])?;
+
+    let mut rides = Vec::new();
+
+    while let Some(row) = cursor.next()? {
+        rides.push(row.into());
+    }
+
+    Ok(rides)
 }
