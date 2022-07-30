@@ -8,5 +8,5 @@ SELECT
 FROM drivers
 	LEFT JOIN rides ON rides.driver_id = drivers.driver_id
 WHERE drivers.event_id = ?
-	AND drivers.campus = ?
+	AND (drivers.campus = ? OR drivers.campus = 'BOTH')
 GROUP BY drivers.driver_id;

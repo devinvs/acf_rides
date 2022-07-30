@@ -8,14 +8,17 @@ pub enum Campus {
     /// Rochester Institute of Technology
     RIT,
     /// University of Rochester
-    UofR
+    UofR,
+    /// Both campuses
+    Both
 }
 
 impl From<&str> for Campus {
     fn from(s: &str) -> Self {
         match s {
             "RIT" => Campus::RIT,
-            _ => Campus::UofR
+            "UofR" => Campus::UofR,
+            _ => Campus::Both
         }
     }
 }
@@ -24,7 +27,8 @@ impl Into<&'static str> for Campus {
     fn into(self) -> &'static str {
         match self {
             Campus::RIT => "RIT",
-            Campus::UofR => "UR"
+            Campus::UofR => "UR",
+            Campus::Both => "BOTH"
         }
     }
 }
@@ -33,7 +37,8 @@ impl Into<String> for Campus {
     fn into(self) -> String {
         match self {
             Campus::RIT => String::from("RIT"),
-            Campus::UofR => String::from("UR")
+            Campus::UofR => String::from("UR"),
+            Campus::Both => String::from("BOTH")
         }
     }
 }
