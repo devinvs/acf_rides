@@ -165,6 +165,7 @@ pub fn create_driver(
     seats: usize,
     campus: Campus
 ) -> Result<(), Box<dyn Error>> {
+    info!("Create Driver");
     let mut stmt = conn.prepare(
         include_str!("./sql/create_driver.sql")
     )?;
@@ -334,6 +335,7 @@ pub fn get_vehicle(
 
 /// Get all events that a user is driving
 pub fn get_driver_events(conn: &Connection, driver_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
+    info!("Get driver events");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_driver_events.sql")
     )?.into_cursor();
@@ -350,6 +352,7 @@ pub fn get_driver_events(conn: &Connection, driver_id: Uuid) -> Result<Vec<Event
 
 /// Get all events a user is getting a ride
 pub fn get_rider_events(conn: &Connection, rider_id: Uuid) -> Result<Vec<Event>, Box<dyn Error>> {
+    info!("get rider events");
     let mut cursor = conn.prepare(
         include_str!("./sql/get_rider_events.sql")
     )?.into_cursor();
@@ -422,6 +425,7 @@ pub fn delete_user_event(conn: &Connection, user_id: Uuid, event_id: Uuid) -> Re
 
 /// Get Driver information for an event
 fn get_event_driver(conn: &Connection, event_id: Uuid, user_id: Uuid) -> Result<Option<(User, Vehicle)>, Box<dyn Error>> {
+    info!("Get driver info for event");
     let mut cursor = conn.prepare(include_str!("./sql/get_event_driver.sql"))?.into_cursor();
 
     cursor.bind(&[Value::String(event_id.to_string()), Value::String(user_id.to_string())])?;
@@ -434,6 +438,7 @@ fn get_event_driver(conn: &Connection, event_id: Uuid, user_id: Uuid) -> Result<
 
 /// Get all information about an event for a given user
 pub fn get_events_data(conn: &Connection, user_id: Uuid) -> Result<Vec<EventData>, Box<dyn Error>> {
+    info!("Get event info for user");
     let mut event_data = Vec::new();
 
     for event in get_events(conn)? {
@@ -458,6 +463,7 @@ pub fn get_events_data(conn: &Connection, user_id: Uuid) -> Result<Vec<EventData
 
 /// Delete old events in the database
 pub fn delete_old_events(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    info!("delete old events");
     let mut remove_events = conn.prepare(
         include_str!("./sql/delete_old_events.sql")
     )?;
@@ -475,11 +481,13 @@ pub fn delete_old_events(conn: &Connection) -> Result<(), Box<dyn Error>> {
 
 /// Pair riders with rides
 pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
+    info!("Match riders with drivers");
     // Begin Transaction
     conn.execute("BEGIN;")?;
 
     let events = get_events(&conn)?;
     for event in events {
+        // RIT
         let rit_rides = unassigned_campus_riders(&conn, event.id, Campus::RIT)?;
 
         for ride in rit_rides {
@@ -496,6 +504,24 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
 
             assign_ride(&conn, event.id, ride.rider_id, rit_drivers[driver_index].0.driver_id)?;
         }
+
+        // UofR
+        let ur_rides = unassigned_campus_riders(&conn, event.id, Campus::UofR)?;
+
+        for ride in ur_rides {
+            let mut driver_index = 0;
+            let ur_drivers = get_available_drivers(&conn, event.id, Campus::UofR)?;
+            if driver_index >= ur_drivers.len() {
+                break;
+            }
+
+            while ur_drivers[driver_index].0.seats - ur_drivers[driver_index].1 <= 0 {
+                driver_index += 1;
+            }
+            println!("Assign???");
+
+            assign_ride(&conn, event.id, ride.rider_id, ur_drivers[driver_index].0.driver_id)?;
+        }
     }
 
     // End Transaction
@@ -505,6 +531,7 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
 
 /// Assign rider to driver for an event
 fn assign_ride(conn: &Connection, event_id: Uuid, rider_id: Uuid, driver_id: Uuid) -> Result<(), Box<dyn Error>> {
+    info!("Assign a ride");
     let mut assign_rider = conn.prepare(
         include_str!("./sql/assign_rider.sql")
     )?;
@@ -527,6 +554,7 @@ fn assign_ride(conn: &Connection, event_id: Uuid, rider_id: Uuid, driver_id: Uui
 
 /// Get list of unassigned riders for an event on a campus
 fn unassigned_campus_riders(conn: &Connection, event_id: Uuid, campus: Campus) -> Result<Vec<Ride>, Box<dyn Error>> {
+    info!("Get unassigned riders for a campus");
     let mut cursor = conn.prepare(include_str!("./sql/get_unassigned_riders.sql"))?.into_cursor();
     cursor.bind(&[Value::String(event_id.to_string()), Value::String(campus.into())])?;
 
