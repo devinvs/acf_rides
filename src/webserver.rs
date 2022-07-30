@@ -447,6 +447,15 @@ async fn post_manage_events(s: Session, form: web::Form<ManageEventForm>) -> imp
         .finish()
 }
 
+#[post("/manage_events/{event_id}")]
+async fn update_event(s: Session, path: web::Path<(String,)>, form: web::Form<ManageEventForm>) -> impl Responder {
+    auth!(s);
+
+    let event_id = Uuid::parse_str(input).unwrap();
+
+    HttpResponse::Ok().finish()
+}
+
 #[get("/reset")]
 async fn get_reset_password() -> impl Responder {
     ResetPasswordTemplate {}.render().unwrap()

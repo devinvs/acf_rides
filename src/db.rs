@@ -250,6 +250,37 @@ pub fn create_event(
     Ok(())
 }
 
+/// Update an event
+pub fn update_event(
+    conn: &Connection,
+    id: Uuid,
+    name: String,
+    time: NaiveDateTime,
+    address1: String,
+    address2: String,
+    city: String,
+    state: String,
+    zipcode: String,
+) -> Result<(), Box<dyn Error>> {
+    info!("Update event: {name}");
+    let mut stmt = conn.prepare(include_str!("./sql/update_event.sql"))?;
+
+    stmt.bind(1, name.as_str())?;
+    stmt.bind(2, time.timestamp())?;
+    stmt.bind(3, address1.as_str())?;
+    stmt.bind(4, address2.as_str())?;
+    stmt.bind(5, city.as_str())?;
+    stmt.bind(6, state.as_str())?;
+    stmt.bind(7, zipcode.as_str())?;
+    stmt.bind(8, id.to_string().as_str())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state==State::Done { break; }
+    }
+    Ok(())
+}
+
 /// Get a list of upcoming events
 pub fn get_events(conn: &Connection) -> Result<Vec<Event>, Box<dyn Error>> {
     info!("Get events");
