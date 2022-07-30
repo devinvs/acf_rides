@@ -472,25 +472,34 @@ pub fn get_events_data(conn: &Connection, user_id: Uuid) -> Result<Vec<EventData
     info!("Get event info for user");
     let mut event_data = Vec::new();
 
-    for event in get_events(conn)? {
-        let riders = get_driver_passengers(conn, event.id, user_id)?;
+    for event in get_rider_events(conn, user_id)? {
         let driver = get_event_driver(conn, event.id, user_id)?;
-
-        let riders = if riders.len() == 0 {
-            None
-        } else {
-            Some(riders)
-        };
-
         event_data.push(EventData {
-            riders,
+            event,
             driver,
-            event
+            riders: None,
+            is_driver: false
         });
     }
 
+    for event in get_driver_events(conn, user_id)? {
+        let riders = get_driver_passengers(conn, event.id, user_id)?;
+        event_data.push(EventData {
+            event,
+            riders: Some(riders),
+            driver: None,
+            is_driver: true
+        });
+    }
+
+    // Sort by event date
+    event_data.sort_by_cached_key(|ed| {
+        ed.event.time.timestamp()
+    });
+
     Ok(event_data)
 }
+
 
 /// Delete old events in the database
 pub fn delete_old_events(conn: &Connection) -> Result<(), Box<dyn Error>> {

@@ -123,7 +123,9 @@ pub struct EventData {
     /// List of tuples of riders and their pickup location
     pub riders: Option<Vec<(User, String)>>,
     /// Tuple of Drivers and their vehicle
-    pub driver: Option<(User, Vehicle)>
+    pub driver: Option<(User, Vehicle)>,
+    /// Is Driver
+    pub is_driver: bool
 }
 
 /// Information about a driver's vehicle
