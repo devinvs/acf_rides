@@ -7,7 +7,7 @@ use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
 use serde::Deserialize;
 use uuid::Uuid;
 use crate::db;
-use crate::models::{Campus, Event, Vehicle};
+use crate::models::{Campus, Event, Vehicle, EventData};
 use askama::Template;
 use std::fs::File;
 use std::io::Read;
@@ -45,7 +45,7 @@ struct LoginTemplate {
 #[derive(Template)]
 #[template(path = "summary.html")]
 struct SummaryTemplate {
-    events: Vec<Event>
+    events_data: Vec<EventData>
 }
 
 #[derive(Template)]
@@ -110,14 +110,14 @@ async fn get_css() -> impl Responder {
 async fn get_root(s: Session) -> impl Responder {
     auth!(s);
 
-    let mut events = vec![];
+    // let mut events = vec![];
     let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
 
     let conn = db::connect();
     let events_data = db::get_events_data(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(SummaryTemplate {events}.render().unwrap())
+    HttpResponse::Ok().body(SummaryTemplate {events_data}.render().unwrap())
 }
 
 #[get("/login")]

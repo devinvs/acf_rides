@@ -24,28 +24,46 @@
     <a href="/manage_events">Manage Events</a>
     <div class="list-box" style="margin-top: 4em;">
         <h2>My Events</h2>
-        {% for event in events %}
+        {% for eventData in events_data %}
             <div class="display-sum">
-                <form action="/events/delete?event_id={{event.id}}" method="post">
-                    <input type="submit" value="X">
-                </form>
                 <div class="event-sum">
                     <div >
-                        <p class="event-info-color-main">{{event.name}}</p>
-                        <p class="event-info-color">{{event.time.format("%l:%M %p")}}</p>
-                        <p class="event-info-color">{{event.time.format("%A, %B %d") }}</p>
-                        <p class="event-info-color">{{event.address1}}</p>
-                        <p class="event-info-color">{{event.city}}, {{event.state}} {{event.zipcode}}</p>
+                        <h3>Event Info</h3>
+                        <p class="event-info-color-main">{{eventData.event.name}}</p>
+                        <p class="event-info-color">{{eventData.event.time.format("%l:%M %p")}}</p>
+                        <p class="event-info-color">{{eventData.event.time.format("%A, %B %d") }}</p>
+                        <p class="event-info-color">{{eventData.event.address1}}</p>
+                        <p class="event-info-color">{{eventData.event.city}}, {{eventData.event.state}} {{eventData.event.zipcode}}</p>
                     </div>
                     <div class="summary-side">
-                        <!-- Driver rider summary -->
-                        <p event-info-color-main>Driver Rider Summary Place Holder</p>
-                        <p class="event-info-color">Nonsense placeholder</p>
-                        <p class="event-info-color">Nonsense placeholder</p>
+                        {% if eventData.is_driver %}
+                            {% if eventData.riders.is_some()%}
+                                <h3>Riders Info</h3>
+                                    {% for riderInfo in eventData.riders.as_ref().unwrap() %}
+                                        <p class="event-info-color-main">Name: {{riderInfo.0.fullname}}</p>
+                                        <p class="event-info-color-main">Number: {{riderInfo.0.number}}</p>
+                                        <p class="event-info-color-main">Pickeup Location: {{riderInfo.1}}</p>
+                                    {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            <h3>Driver Info</h3>
+                            {%if eventData.driver.is_some()%}
+                                <p class="event-info-color-main">Name: {{eventData.driver.as_ref().unwrap().0.fullname}}</p>
+                                <p class="event-info-color-main">Number: {{eventData.driver.as_ref().unwrap().0.number}}</p>
+                                <p class="event-info-color-main">
+                                    Vehicle: 
+                                    {{eventData.driver.as_ref().unwrap().1.color}}
+                                    {{eventData.driver.as_ref().unwrap().1.make}}
+                                    {{eventData.driver.as_ref().unwrap().1.model}}
+                                </p>
+                            {% else %}
+                                <p>Searching for a Driver</p>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
         {% endfor %}
-    </div>
+    </div> 
 </body>
 </html>
