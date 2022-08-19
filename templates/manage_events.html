@@ -16,26 +16,17 @@
         <h2>Agape Christian Fellowship</h2>
     </div>
     <form action="/manage_events" method="post">
-        <h2>Add an Event</h2>
-        <hr width="90%" color="#b51515"> 
+        <h2>ADD AN EVENT</h2>
         <input type="text" name="name" placeholder="name" required>
-        <br>
-        <h3>Enter the Date and Time</h3>
-        <br>
         <div class="time">
             <input type="date" name="date" placeholder="date" required>
             <input type="time" name="time" placeholder="time" required>
         </div>
-        <br>
-        <h3>Enter the Address</h3>
-        <br>
         <input type= "text" name="address1" placeholder="address1" required>
         <input type="text" name="address2" placeholder="address2">
-        <br>
         <input type="text" name="city" placeholder="city" required>
         <input type="text" name="state" placeholder="state" required>
         <input type="number" name="zipcode" placeholder="zipcode" required>
-        <br>
         <input type="submit" value="Add Event">
     </form>
 </body>

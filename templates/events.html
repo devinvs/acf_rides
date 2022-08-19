@@ -16,18 +16,14 @@
         <h2>Agape Christian Fellowship</h2>
     </div>
     <div class="list-box">
-        <h2>Select an Event</h2>
+        <h2>Select Event</h2>
         {% for event in events %}
-        <li>
             <a href="{{href}}?event_id={{event.id}}"
             class="link-button">
-                {{event.name}}
-                <br>
-                {{event.time.format("%l:%M %p")}}
-                <br>
-                {{event.time.format("%A, %B %d") }}
+                <p class="event-name">{{event.name}}</p>
+                <p class="event-date">{{event.time.format("%A, %B %d")}}</p>
+                <p class="event-time">{{event.time.format("%l:%M %p")}}</p>
             </a>
-        </li>
         {% endfor %}
     </div>
 </body>

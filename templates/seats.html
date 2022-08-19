@@ -16,15 +16,13 @@
         <h2>Agape Christian Fellowship</h2>
     </div>
     <form action="/seats" method="POST">
-        <h2>Campus</h2>
         <select name="campus" required>
-            <option value = "" />
+            <option value = "" >Select Campus</option>
             <option value = "RIT">RIT</option>
             <option value = "UofR">UofR</option>
 			<option value = "BOTH">Both</option>
         </select>
-        <h2>Available Seats</h2>
-        <input type="text" name="seats" placeholder="Seats" required />
+        <input type="text" name="seats" placeholder="Available Seats" required />
         <input type="submit" value="submit" />
     </form>
 </body>

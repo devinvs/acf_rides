@@ -16,25 +16,19 @@
         <h2>Agape Christian Fellowship</h2>
     </div>
     <div class="list-box">
-        <h2>Select a Vehicle</h2>
+        <h2>Select Vehicle</h2>
         {% for vehicle in vehicles %}
-        <li>
             <a href="/seats?vehicle_id={{vehicle.id}}"
             class="link-button">
                 {{vehicle.color}} {{vehicle.make}} {{vehicle.model}}
             </a>
-        </li>
         {% endfor %}
     </div>
     <form action="/vehicles" method="POST">
-        <h2>Add a Vehicle</h2>
-        <hr width="90%" color="#b51515"> 
+        <h3>Add a Vehicle</h3>
         <input type="text" name="make" placeholder="make" required>
-        <br>
         <input type="text" name="model" placeholder="model" required>
-        <br>
         <input type="text" name="color" placeholder="color" required>
-        <br>
         <input type="submit" value="Add Vehicle">
     </form>
 </body>

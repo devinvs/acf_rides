@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,7 +7,7 @@
 
 body {
   margin: 0;
-  background-color: #fffdd0;
+  background-color: #fff4d2;
   font-family: sans-serif;
   padding: 16px;
   padding-top: 3em;
@@ -20,10 +22,10 @@ h3,
 h4,
 h5,
 h6 {
-  color: #911f27;
-  text-align: center;
   margin: 2;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Oswald', sans-serif;
+  color: #444;
+  margin-left: 16px;
 }
 
 h1 {
@@ -33,23 +35,25 @@ h1 {
   color: #911f27 !important;
 }
 
-h2,
+h2
+{
+  font-size: 3em;
+}
+
 h3 {
   font-size: 2em;
-  padding-bottom: 0.3em;
 }
 
 .title {
-  margin-bottom: 2em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
 }
 
 .title h1 {
   font-size: 6em !important;
+  font-family: 'Josefin Sans', sans-serif;
   margin: 0;
 }
 
@@ -57,41 +61,47 @@ h3 {
   margin: 0;
   font-size:  1em !important;
   position: relative;
+  font-family: 'Josefin Sans', sans-serif;
   top: -25px;
+  color: #911f27 !important;
 }
 
 .time {
-  display: grid;
+  display: flex;
+  justify-content: space-between;
   width: 90%;
-  grid-template-columns: auto auto;
 }
 
-.time,
+select {
+    margin-bottom: 12px;
+    font-size: 16px;
+    padding: 12px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+}
+
 form input[type="date"],
 form input[type="time"] {
   width: auto;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+
   border: none;
   outline: none;
-  padding: 4px;
   border-radius: 0.5em;
-  width: 90%;
-  margin-bottom: 0.6em;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #face7f;
-  border-radius: 0.5em;
   width: 95%;
   margin-top: 2.5em;
   margin-bottom: 2em;
-  padding-top: 1.3em;
   padding-bottom: 1.3em;
-  box-shadow: 0px 1px 4px gray;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 form input[type="text"],
@@ -102,12 +112,14 @@ form input[type="number"] {
   border: none;
   outline: none;
 
-  padding: 8px;
-  margin: 4px;
+  padding: 12px;
   border-radius: 0.5em;
   width: 90%;
-  margin-top: 1em;
-  margin-bottom: 1em;
+
+  margin-bottom: 12px;
+
+  font-size: 16px;
+  max-width: 400px;
 }
 
 form input[type="text"]:focus,
@@ -124,20 +136,12 @@ form input[type="number"]:focus {
 }
 
 form input[type=number]::-webkit-inner-spin-button,
-form input[type=number]::-webkit-inner-spin-button,
 form input[type=number] {
     -webkit-appearance: none; 
-    margin: 0; 
     -moz-appearance:textfield;
 }
 
-form input[type=number] {
-    margin-top: 1em;
-}
-
-
 form input[type="submit"] {
-  margin-top: 2em;
   background-color: #911f27;
   color: white;
   border-radius: 0.5em;
@@ -146,6 +150,12 @@ form input[type="submit"] {
   width: fit-content;
   min-width: 150px;
   border: none;
+  font-size: 16px;
+}
+
+.forgot-password {
+    white-space: nowrap;
+    font-size: 14px;
 }
 
 form input[type="submit"]:hover {
@@ -166,21 +176,19 @@ p {
   margin-top: 0.5em;
 }
 
-li {
-    list-style-type: none
-}
-
 .error {
   color: #911f27;
   font-style: italic;
 }
 
 .box-bottom {
-  width: 80%;
+  margin-top: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content:space-between;
+  width: 90%;
+  max-width: 400px;
 }
 
 .bottom-text {
@@ -196,20 +204,68 @@ li {
   width: 90%;
   display: grid;
   grid-template-columns: auto auto;
+  max-width: 500px;
+}
+
+.event-name {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.event-sum-title {
+    padding: 4px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.link-button .event-name {
+    margin: 0;
+    align-self: flex-start;
+    font-weight: bold;
+}
+
+.event-sum-title .event-date, .event-sum-title .event-time {
+    text-align: right;
+}
+
+.event-date, .event-time {
+    font-size: 14px;
+    margin :0;
+    color: #666;
+}
+
+.link-button .event-date, .link-button .event-time {
+    align-self: flex-start;
+    color: #eee;
+}
+
+.event-sum-address {
+    margin-left: 48px;
+    margin-bottom: 16px;
+}
+
+.event-sum p {
+    margin: 0;
+}
+
+.event-sum-riders {
+    margin-bottom: 12px;
 }
 
 .sum-box-child, .link-button {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1em;
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left: 1em;
-  padding-right: 1em;
-  background-color: #face7f;
+
+  margin: 16px;
+  padding: 16px 32px;
+
+  background-color: #911f27 !important;
   border-radius: 0.5em;
   box-shadow: 0px 1px 4px gray;
+  color: white;
 }
 
 .link-button:hover {
@@ -227,11 +283,6 @@ li {
 
 .list-box {
   width: 95%;
-  margin: 1em;
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left: 1em;
-  padding-right: 1em;
 }
 
 .display-sum {
@@ -267,16 +318,11 @@ li {
 }
 
 .event-sum {
-  padding: 1em;
-  display: flex;
-  flex-direction: row;
-  justify-content:space-between; 
-  text-align: left;
-  width: 90%;
-}
+  margin-top: 16px;
 
-.event-sum p {
-  margin: 0;
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 25px;
 }
 
 .event-info-color-main {
@@ -305,21 +351,11 @@ li {
 }
 
 @media only screen and (min-width: 850px) {
-  html {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #fbedb6;
-    margin-top: 3em;
-    padding-bottom: 4em;
-  }
-  
   body {
-    width: 50%;
-    margin: 0;
+    max-width: 1200px;
+    margin: auto;
     padding-bottom: 3em;
     border-radius: 0.5em;
-    box-shadow: 0px 2px 6px gray;
   }
 
   .title h1 {
@@ -327,7 +363,7 @@ li {
   }
   
   .title h2 {
-    font-size:  1.3em !important;
+    font-size:  1.5em !important;
   }
 
   form, .list-box, .summary-box {
@@ -336,5 +372,24 @@ li {
 
   .bottom-text {
     width: 80%;
+  }
+
+  .list-box {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+  }
+
+  .event-sum .event-name {
+      margin-right: 16px;
+  }
+
+  .event-sum .event-date {
+      white-space: nowrap;
+  }
+
+  .event-sum {
+      width: 400px;
+      margin: 16px;
   }
 }
