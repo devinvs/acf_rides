@@ -110,7 +110,6 @@ async fn get_css() -> impl Responder {
 async fn get_root(s: Session) -> impl Responder {
     auth!(s);
 
-    // let mut events = vec![];
     let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
 
