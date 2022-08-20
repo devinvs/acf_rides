@@ -39,8 +39,7 @@ pub fn create_user(
     email: String,
     fullname: String,
     password: String,
-    number: String,
-    campus: Campus
+    number: String
 ) -> Result<(), Box<dyn Error>> {
     info!("Creating New User: {email}");
     let id = Uuid::new_v4().to_string();
@@ -48,14 +47,11 @@ pub fn create_user(
 
     let mut stmt = conn.prepare(include_str!("./sql/create_user.sql"))?;
 
-    let campus: &'static str = campus.into();
-
     stmt.bind(1, id.as_str())?;
     stmt.bind(2, email.as_str())?;
     stmt.bind(3, fullname.as_str())?;
     stmt.bind(4, hash.as_str())?;
     stmt.bind(5, number.as_str())?;
-    stmt.bind(6, campus)?;
 
     loop {
         let state = stmt.next()?;
@@ -463,7 +459,7 @@ fn get_event_driver(conn: &Connection, event_id: Uuid, user_id: Uuid) -> Result<
     let row = cursor.next()?;
 
     Ok(row.map(|row| {
-        (row.into(), row[6..].into())
+        (row.into(), row[5..].into())
     }))
 }
 

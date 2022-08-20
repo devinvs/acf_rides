@@ -53,9 +53,7 @@ pub struct User {
     /// Hashed using BCrypt
     pub password: String,
     /// Phone Number
-    pub number: String,
-    /// Default campus for a user
-    pub campus: Campus
+    pub number: String
 }
 
 impl From<&[Value]> for User {
@@ -65,7 +63,6 @@ impl From<&[Value]> for User {
         let fullname = row[2].as_string().unwrap().to_string();
         let password = row[3].as_string().unwrap().to_string();
         let number = row[4].as_string().unwrap().to_string();
-        let campus = Campus::from(row[5].as_string().unwrap());
 
         User {
             id,
@@ -73,7 +70,6 @@ impl From<&[Value]> for User {
             fullname,
             password,
             number,
-            campus
         }
     }
 }

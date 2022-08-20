@@ -17,27 +17,11 @@
     </div>
     <form action="/signup" method="post">
         <h2>Sign Up</h2>
-        <hr width="90%" color="#b51515"> 
         <input type="text" name="name" placeholder="Full Name" required>
-        <br>
         <input type="email" name="email" placeholder="Email" required>
-        <br>
         <input type="password" name="password" placeholder="Password" required>
-        <br>
         <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-        <br>
-        <input type="tel" name="phone"
-        placeholder="Phone Number" required>
-        <br>
-        <div>
-            <p>Select Campus</p> 
-            <select name = "campus" required>
-                <option value = "" ></option>
-                <option value = "RIT" >RIT</option>
-                <option value = "UofR">UofR</option>
-            </select>
-        </div>
-        <br>
+        <input type="tel" name="phone" placeholder="Phone Number" required>
         <p>{{error}}</p>
         <div class="box-bottom">
             <a href="/login">Sign In Instead</a>

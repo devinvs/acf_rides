@@ -68,8 +68,9 @@ h3 {
 
 .time {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 90%;
+  max-width: 400px;
 }
 
 select {
@@ -249,10 +250,6 @@ p {
     margin: 0;
 }
 
-.event-sum-riders {
-    margin-bottom: 12px;
-}
-
 .sum-box-child, .link-button {
   display: flex;
   flex-direction: column;
@@ -323,6 +320,7 @@ p {
   background-color: white;
   border: 3px solid black;
   border-radius: 25px;
+  padding-bottom: 8px;
 }
 
 .event-info-color-main {
