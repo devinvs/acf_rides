@@ -352,7 +352,6 @@ struct SignupFormData {
     email: String,
     password: String,
     confirm_password: String,
-    campus: String,
     phone: String
 }
 
@@ -376,16 +375,13 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
             )
     }
 
-    let campus: Campus = form.campus.as_str().into();
-
     let conn = db::connect();
     db::create_user(
         &conn,
         form.email.clone(),
         form.name.clone(),
         form.password.clone(),
-        form.phone.clone(),
-        campus
+        form.phone.clone()
     ).unwrap();
     let user = db::get_user_by_email(&conn, form.email.clone()).unwrap().unwrap();
 

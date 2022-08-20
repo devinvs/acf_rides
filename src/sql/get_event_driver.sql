@@ -4,7 +4,6 @@ SELECT
     u.fullname,
     u.password,
     u.number,
-    u.campus,
     v.id,
     v.user_id,
     v.color,

@@ -3,6 +3,5 @@ INSERT INTO users (
     email,
     fullname,
     password,
-    number,
-    campus
-) VALUES (?, ?, ?, ?, ?, ?);
+    number
+) VALUES (?, ?, ?, ?, ?);

@@ -3,8 +3,7 @@ CREATE TABLE users (
     email TEXT,
     fullname TEXT,
     password TEXT,
-    number TEXT,
-    campus TEXT
+    number TEXT
 );
 
 CREATE TABLE events (

@@ -3,8 +3,7 @@ SELECT
     email,
     fullname,
     password,
-    number,
-    campus
+    number
 FROM users
 WHERE email = ?
 LIMIT 1;

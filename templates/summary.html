@@ -20,49 +20,67 @@
         
         <a href="/events?flow=ride" class="link-button">Ride</a>
     </div>
-    <br>
     <a href="/manage_events">Manage Events</a>
-    <div class="list-box" style="margin-top: 4em;">
-        <h2>My Events</h2>
+    <h2 style="margin-top: 36px;">Upcoming</h2>
+    <div class="list-box">
         {% for eventData in events_data %}
-            <div class="display-sum">
-                <div class="event-sum">
-                    <div >
-                        <h3>Event Info</h3>
-                        <p class="event-info-color-main">{{eventData.event.name}}</p>
-                        <p class="event-info-color">{{eventData.event.time.format("%l:%M %p")}}</p>
-                        <p class="event-info-color">{{eventData.event.time.format("%A, %B %d") }}</p>
-                        <p class="event-info-color">{{eventData.event.address1}}</p>
-                        <p class="event-info-color">{{eventData.event.city}}, {{eventData.event.state}} {{eventData.event.zipcode}}</p>
-                    </div>
-                    <div class="summary-side">
-                        {% if eventData.is_driver %}
-                            {% if eventData.riders.is_some()%}
-                                <h3>Riders Info</h3>
-                                    {% for riderInfo in eventData.riders.as_ref().unwrap() %}
-                                        <p class="event-info-color-main">Name: {{riderInfo.0.fullname}}</p>
-                                        <p class="event-info-color-main">Number: {{riderInfo.0.number}}</p>
-                                        <p class="event-info-color-main">Pickeup Location: {{riderInfo.1}}</p>
-                                    {% endfor %}
-                            {% endif %}
-                        {% else %}
-                            <h3>Driver Info</h3>
-                            {%if eventData.driver.is_some()%}
-                                <p class="event-info-color-main">Name: {{eventData.driver.as_ref().unwrap().0.fullname}}</p>
-                                <p class="event-info-color-main">Number: {{eventData.driver.as_ref().unwrap().0.number}}</p>
-                                <p class="event-info-color-main">
-                                    Vehicle: 
-                                    {{eventData.driver.as_ref().unwrap().1.color}}
-                                    {{eventData.driver.as_ref().unwrap().1.make}}
-                                    {{eventData.driver.as_ref().unwrap().1.model}}
-                                </p>
-                            {% else %}
-                                <p>Searching for a Driver</p>
-                            {% endif %}
-                        {% endif %}
+            <div class="event-sum">
+                <div class="event-sum-title">
+                    <p class="event-name">{{eventData.event.name}}</p>
+                    <div>
+                        <p class="event-date">{{eventData.event.time.format("%A, %B %d")}}</p>
+                        <p class="event-time">{{eventData.event.time.format("%l:%M%p")}}</p>
                     </div>
                 </div>
-            </div>
+                {% if eventData.is_driver %}
+                <div class="event-sum-address">
+                    <a>
+                    <p>{{eventData.event.address1}}</p>
+                    <p>{{eventData.event.address2}}</p>
+                    <p>{{eventData.event.city}}, {{eventData.event.state}} {{eventData.event.zipcode}}</p>
+                    </a>
+                </div>
+                <div class="event-sum-riders">
+                    {% if eventData.riders.is_some() %}
+                        <ul>
+                        {% for riderInfo in eventData.riders.as_ref().unwrap() %}
+                            <li>
+                                {{riderInfo.0.fullname}}
+                                <ul>
+                                    <li><a href="sms:{{riderInfo.0.number}}">{{riderInfo.0.number}}</a></li>
+                                    <li>{{riderInfo.1}}</li>
+                                </ul>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                {% else %}
+                    {%if eventData.driver.is_some()%}
+                        <ul>
+                            <li>
+                                {{eventData.driver.as_ref().unwrap().0.fullname}}
+                                <ul>
+                                    <li>
+                                        <a href="sms:{{eventData.driver.as_ref().unwrap().0.number}}">
+                                            {{eventData.driver.as_ref().unwrap().0.number}}
+                                        </a>
+                                    </li>
+                                    <li>{{eventData.driver.as_ref().unwrap().1.color}}
+                                        {{eventData.driver.as_ref().unwrap().1.make}}
+                                        {{eventData.driver.as_ref().unwrap().1.model}}
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <div class="event-sum-address">
+                            <p>Searching for a Driver...</p>
+                            <p>Refresh Page for Updates</p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                </div>
         {% endfor %}
     </div> 
 </body>
