@@ -1,19 +1,19 @@
 /**
- * The html div element that we store the upcoming events summary
+ * The html div element that we store the upcoming events container
  */
 let upcomingEventsContainer;
 
 /**
- * The amount of secs to wait before updating the upcoming events summary
+ * The amount of secs to wait before updating the upcoming events container
  * Currently it is set to 5 seconds
  */
 let msecs = 5000;
 
 /**
- * Calls the web server to get the rendered event summary HTML
+ * Calls the web server to get the rendered upcoming events HTML
  * @returns The rendered event summary HTML
  */
-getRenderedUpcomingEventsSummaryData = async () => {
+getRenderedUpcomingEventsHtml = async () => {
   try {
     let response = await fetch("/upcoming_events");
     return response.text();
@@ -35,8 +35,7 @@ initializeUpcomingEventsContainer = () => {
  * Inserts the rendered event summary html on the summary page
  */
 updateUpcomingEventsContainerData = async () => {
-  upcomingEventsContainer.innerHTML =
-    await getRenderedUpcomingEventsSummaryData();
+  upcomingEventsContainer.innerHTML = await getRenderedUpcomingEventsHtml();
 };
 
 /**
