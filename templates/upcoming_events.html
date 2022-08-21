@@ -6,6 +6,9 @@
             <div>
                 <p class="event-date">{{eventData.event.time.format("%A, %B %d")}}</p>
                 <p class="event-time">{{eventData.event.time.format("%l:%M%p")}}</p>
+                <p class="unattend-event" onclick="removeEvent('{{eventData.event.id}}')">
+                    Unattend Event
+                </p>
             </div>
         </div>
         {% if eventData.is_driver %}

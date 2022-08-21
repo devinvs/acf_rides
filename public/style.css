@@ -226,17 +226,19 @@ p {
     font-weight: bold;
 }
 
-.event-sum-title .event-date, .event-sum-title .event-time {
+.event-sum-title .event-date, 
+.event-sum-title .event-time, 
+.event-sum-title .unattend-event {
     text-align: right;
 }
 
-.event-date, .event-time {
+.event-date, .event-time, .unattend-event {
     font-size: 14px;
     margin :0;
     color: #666;
 }
 
-.link-button .event-date, .link-button .event-time {
+.link-button .event-date, .link-button .event-time, .link-button .unattend-event {
     align-self: flex-start;
     color: #eee;
 }

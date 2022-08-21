@@ -50,3 +50,13 @@ window.onload = () => {
     updateUpcomingEventsContainerData();
   }, msecs);
 };
+
+/**
+ * Calls the web server to remove an event from the current user
+ */
+removeEvent = async (eventId) => {
+  let apiPath = "/events/delete?event_id=" + eventId;
+  fetch(apiPath, { method: "POST" })
+    .then(() => updateUpcomingEventsContainerData())
+    .catch((error) => console.error(error));
+};
