@@ -13,7 +13,7 @@ let msecs = 5000;
  * Calls the web server to get the rendered event summary HTML
  * @returns The rendered event summary HTML
  */
-const getRenderedUpcomingEventsSummaryData = async () => {
+getRenderedUpcomingEventsSummaryData = async () => {
   try {
     let response = await fetch("/upcoming_events");
     return response.text();
@@ -27,14 +27,14 @@ const getRenderedUpcomingEventsSummaryData = async () => {
  * Must wait until windowed is loaded to use this function, otherwise
  * the target html element won't exist
  */
-const initializeUpcomingEventsContainer = () => {
+initializeUpcomingEventsContainer = () => {
   upcomingEventsContainer = document.getElementById("upcomingEventsContainer");
 };
 
 /**
  * Inserts the rendered event summary html on the summary page
  */
-const updateUpcomingEventsContainerData = async () => {
+updateUpcomingEventsContainerData = async () => {
   upcomingEventsContainer.innerHTML =
     await getRenderedUpcomingEventsSummaryData();
 };
