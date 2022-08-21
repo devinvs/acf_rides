@@ -1,17 +1,17 @@
+use crate::db;
+use crate::models::{Campus, Event, EventData, Vehicle};
+use actix_session::{storage::CookieSessionStore, Session, SessionMiddleware};
+use actix_web::cookie::Key;
+use actix_web::middleware::Logger;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use askama::Template;
 use chrono::NaiveDateTime;
 use log::info;
-use actix_web::middleware::Logger;
-use actix_web::{App, HttpServer, Responder, get, HttpResponse, post, web};
-use actix_web::cookie::Key;
-use actix_session::{Session, SessionMiddleware, storage::CookieSessionStore};
 use serde::Deserialize;
-use uuid::Uuid;
-use crate::db;
-use crate::models::{Campus, Event, Vehicle, EventData};
-use askama::Template;
+use std::env;
 use std::fs::File;
 use std::io::Read;
-use std::env;
+use uuid::Uuid;
 
 use lazy_static::lazy_static;
 
@@ -20,7 +20,7 @@ lazy_static! {
     static ref INVITE_ID: Uuid = {
         env::vars()
             .filter_map(|(key, val)| {
-                if key=="INVITE_ID" {
+                if key == "INVITE_ID" {
                     if let Ok(id) = Uuid::parse_str(&val) {
                         Some(id)
                     } else {
@@ -39,20 +39,20 @@ lazy_static! {
 #[derive(Template)]
 #[template(path = "login.html")]
 struct LoginTemplate {
-    error: String
+    error: String,
 }
 
 #[derive(Template)]
 #[template(path = "summary.html")]
 struct SummaryTemplate {
-    events_data: Vec<EventData>
+    events_data: Vec<EventData>,
 }
 
 #[derive(Template)]
 #[template(path = "events.html")]
 struct EventsTemplate {
     events: Vec<Event>,
-    href: String
+    href: String,
 }
 
 #[derive(Template)]
@@ -70,13 +70,13 @@ struct ResetPasswordTemplate {}
 #[derive(Template)]
 #[template(path = "signup.html")]
 struct SignupTemplate {
-    error: String
+    error: String,
 }
 
 #[derive(Template)]
 #[template(path = "vehicles.html")]
 struct VehiclesTemplate {
-    vehicles: Vec<Vehicle>
+    vehicles: Vec<Vehicle>,
 }
 
 #[derive(Template)]
@@ -87,8 +87,7 @@ macro_rules! auth {
     ($s:ident) => {
         let logged_in = $s.get::<bool>("logged_in").unwrap();
         if logged_in.is_none() || !logged_in.unwrap() {
-            return
-                HttpResponse::SeeOther()
+            return HttpResponse::SeeOther()
                 .append_header(("Location", "/login"))
                 .finish();
         }
@@ -101,9 +100,16 @@ async fn get_css() -> impl Responder {
     let mut buf = String::new();
     f.read_to_string(&mut buf).unwrap();
 
-    HttpResponse::Ok()
-        .content_type("text/css")
-        .body(buf)
+    HttpResponse::Ok().content_type("text/css").body(buf)
+}
+
+#[get("/summary_data_js")]
+async fn get_summary_data_js() -> impl Responder {
+    let mut f = File::open("./public/summary_data.js").unwrap();
+    let mut buf = String::new();
+    f.read_to_string(&mut buf).unwrap();
+
+    HttpResponse::Ok().content_type("text/css").body(buf)
 }
 
 #[get("/")]
@@ -116,20 +122,18 @@ async fn get_root(s: Session) -> impl Responder {
     let conn = db::connect();
     let events_data = db::get_events_data(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(SummaryTemplate {events_data}.render().unwrap())
+    HttpResponse::Ok().body(SummaryTemplate { events_data }.render().unwrap())
 }
 
 #[get("/login")]
 async fn get_login() -> impl Responder {
-    LoginTemplate {
-        error: "".into()
-    }
+    LoginTemplate { error: "".into() }
 }
 
 #[derive(Deserialize)]
 struct LoginFormData {
     email: String,
-    password: String
+    password: String,
 }
 
 #[post("/login")]
@@ -150,15 +154,17 @@ async fn post_login(s: Session, form: web::Form<LoginFormData>) -> impl Responde
     }
 
     HttpResponse::Ok().body(
-        LoginTemplate{
-            error: "Email/Password Incorrect".into()
-        }.render().unwrap()
+        LoginTemplate {
+            error: "Email/Password Incorrect".into(),
+        }
+        .render()
+        .unwrap(),
     )
 }
 
 #[derive(Deserialize)]
 struct FlowQuery {
-    flow: String
+    flow: String,
 }
 
 #[get("/events")]
@@ -173,19 +179,15 @@ async fn get_events(s: Session, flow: web::Query<FlowQuery>) -> impl Responder {
                 .append_header(("Location", "/"))
                 .finish()
         }
-    }.to_string();
+    }
+    .to_string();
 
     s.insert("flow", flow.flow.clone()).unwrap();
 
     let conn = db::connect();
     let events = db::get_events(&conn).unwrap();
 
-    HttpResponse::Ok().body(
-        EventsTemplate {
-            events,
-            href
-        }.render().unwrap()
-    )
+    HttpResponse::Ok().body(EventsTemplate { events, href }.render().unwrap())
 }
 
 #[get("/pickup")]
@@ -194,14 +196,13 @@ async fn get_pickup(s: Session, q: web::Query<EventQuery>) -> impl Responder {
 
     s.insert("event_id", q.event_id.clone()).unwrap();
 
-    HttpResponse::Ok()
-        .body(PickupTemplate {}.render().unwrap())
+    HttpResponse::Ok().body(PickupTemplate {}.render().unwrap())
 }
 
 #[derive(Deserialize)]
 struct PickupData {
     campus: String,
-    pickup: String
+    pickup: String,
 }
 
 #[post("/pickup")]
@@ -242,18 +243,14 @@ async fn get_vehicles(s: Session, q: web::Query<EventQuery>) -> impl Responder {
     let conn = db::connect();
     let vehicles = db::get_driver_vehicles(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(
-        VehiclesTemplate {
-            vehicles
-        }.render().unwrap()
-    )
+    HttpResponse::Ok().body(VehiclesTemplate { vehicles }.render().unwrap())
 }
 
 #[derive(Deserialize)]
 struct VehicleFormData {
     make: String,
     model: String,
-    color: String
+    color: String,
 }
 
 #[post("/vehicles")]
@@ -264,19 +261,22 @@ async fn post_vehicle(s: Session, form: web::Form<VehicleFormData>) -> impl Resp
     let id = Uuid::parse_str(id.as_str()).unwrap();
 
     let conn = db::connect();
-    db::create_vehicle(&conn, id, form.color.clone(), form.make.clone(), form.model.clone()).unwrap();
+    db::create_vehicle(
+        &conn,
+        id,
+        form.color.clone(),
+        form.make.clone(),
+        form.model.clone(),
+    )
+    .unwrap();
     let vehicles = db::get_driver_vehicles(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(
-        VehiclesTemplate {
-            vehicles
-        }.render().unwrap()
-    )
+    HttpResponse::Ok().body(VehiclesTemplate { vehicles }.render().unwrap())
 }
 
 #[derive(Deserialize)]
 struct VehicleQuery {
-    vehicle_id: String
+    vehicle_id: String,
 }
 
 #[get("/seats")]
@@ -285,14 +285,13 @@ async fn get_seats(s: Session, q: web::Query<VehicleQuery>) -> impl Responder {
 
     s.insert("vehicle_id", q.vehicle_id.clone()).unwrap();
 
-    HttpResponse::Ok()
-        .body(SeatsTemplate{}.render().unwrap())
+    HttpResponse::Ok().body(SeatsTemplate {}.render().unwrap())
 }
 
 #[derive(Deserialize)]
 struct SeatsData {
     campus: String,
-    seats: usize
+    seats: usize,
 }
 
 #[post("/seats")]
@@ -320,12 +319,11 @@ async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 struct SignupQuery {
-    invite_id: Option<String>
+    invite_id: Option<String>,
 }
 
 #[get("/signup")]
 async fn get_signup(q: web::Query<SignupQuery>) -> impl Responder {
-
     if q.invite_id.is_none() {
         return HttpResponse::SeeOther()
             .append_header(("location", "/"))
@@ -339,10 +337,7 @@ async fn get_signup(q: web::Query<SignupQuery>) -> impl Responder {
             .finish();
     }
 
-    HttpResponse::Ok()
-        .body(SignupTemplate {
-                error: "".into()
-        }.render().unwrap())
+    HttpResponse::Ok().body(SignupTemplate { error: "".into() }.render().unwrap())
 }
 
 #[derive(Deserialize)]
@@ -351,27 +346,29 @@ struct SignupFormData {
     email: String,
     password: String,
     confirm_password: String,
-    phone: String
+    phone: String,
 }
 
 #[post("/signup")]
 async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Responder {
-
     if form.password != form.confirm_password {
         return HttpResponse::Ok().body(
             SignupTemplate {
-                error: "Passwords do not match".into()
-            }.render().unwrap()
+                error: "Passwords do not match".into(),
+            }
+            .render()
+            .unwrap(),
         );
     }
 
     if form.password.len() < 8 {
-        return HttpResponse::Ok()
-            .body(
-                SignupTemplate {
-                    error: "Password must be 8 characters or more".into()
-                }.render().unwrap()
-            )
+        return HttpResponse::Ok().body(
+            SignupTemplate {
+                error: "Password must be 8 characters or more".into(),
+            }
+            .render()
+            .unwrap(),
+        );
     }
 
     let conn = db::connect();
@@ -380,9 +377,12 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
         form.email.clone(),
         form.name.clone(),
         form.password.clone(),
-        form.phone.clone()
-    ).unwrap();
-    let user = db::get_user_by_email(&conn, form.email.clone()).unwrap().unwrap();
+        form.phone.clone(),
+    )
+    .unwrap();
+    let user = db::get_user_by_email(&conn, form.email.clone())
+        .unwrap()
+        .unwrap();
 
     s.insert("logged_in", true).unwrap();
     s.insert("user_id", user.id.to_string()).unwrap();
@@ -396,9 +396,7 @@ async fn post_signup(s: Session, form: web::Form<SignupFormData>) -> impl Respon
 async fn get_manage_events(s: Session) -> impl Responder {
     auth!(s);
 
-    HttpResponse::Ok().body(
-        ManageEventsTemplate {}.render().unwrap()
-    )
+    HttpResponse::Ok().body(ManageEventsTemplate {}.render().unwrap())
 }
 
 #[derive(Deserialize)]
@@ -410,16 +408,16 @@ struct ManageEventForm {
     address2: Option<String>,
     city: String,
     state: String,
-    zipcode: String
+    zipcode: String,
 }
 
 #[post("/manage_events")]
 async fn post_manage_events(s: Session, form: web::Form<ManageEventForm>) -> impl Responder {
     auth!(s);
 
-    let time = NaiveDateTime::parse_from_str(
-        &format!("{} {}", form.date, form.time), "%Y-%m-%d %H:%M"
-    ).unwrap();
+    let time =
+        NaiveDateTime::parse_from_str(&format!("{} {}", form.date, form.time), "%Y-%m-%d %H:%M")
+            .unwrap();
 
     let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
@@ -434,8 +432,9 @@ async fn post_manage_events(s: Session, form: web::Form<ManageEventForm>) -> imp
         form.city.clone(),
         form.state.clone(),
         form.zipcode.clone(),
-        id
-    ).unwrap();
+        id,
+    )
+    .unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -449,7 +448,7 @@ async fn get_reset_password() -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 struct DeleteQuery {
-    event_id: String
+    event_id: String,
 }
 
 #[post("/events/delete")]
@@ -478,12 +477,9 @@ pub async fn start() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::new("%r"))
             .wrap(
-                SessionMiddleware::builder(
-                    CookieSessionStore::default(),
-                    secret_key.clone()
-                )
-                .cookie_secure(true)
-                .build()
+                SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())
+                    .cookie_secure(true)
+                    .build(),
             )
             .service(get_root)
             .service(get_login)
@@ -501,10 +497,10 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_seats)
             .service(post_seats)
             .service(get_css)
+            .service(get_summary_data_js)
             .service(delete_event)
     })
     .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
-
