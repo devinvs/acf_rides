@@ -16,7 +16,6 @@ let msecs = 5000;
 const getRenderedEventSummaryData = async () => {
   try {
     let response = await fetch("/summary_data");
-
     return response.text();
   } catch (error) {
     console.log(error);
