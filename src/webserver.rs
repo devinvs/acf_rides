@@ -47,8 +47,8 @@ struct LoginTemplate {
 struct SummaryTemplate {}
 
 #[derive(Template)]
-#[template(path = "summary_data.html")]
-struct SummaryDataTemplate {
+#[template(path = "upcoming_events.html")]
+struct UpcomingEventsTemplate {
     events_data: Vec<EventData>,
 }
 
@@ -107,9 +107,9 @@ async fn get_css() -> impl Responder {
     HttpResponse::Ok().content_type("text/css").body(buf)
 }
 
-#[get("/summary_data_js")]
-async fn get_summary_data_js() -> impl Responder {
-    let mut f = File::open("./public/summary_data.js").unwrap();
+#[get("/upcoming_events_js")]
+async fn get_upcoming_events_js() -> impl Responder {
+    let mut f = File::open("./public/upcoming_events.js").unwrap();
     let mut buf = String::new();
     f.read_to_string(&mut buf).unwrap();
 
@@ -122,8 +122,8 @@ async fn get_root(s: Session) -> impl Responder {
     HttpResponse::Ok().body(SummaryTemplate {}.render().unwrap())
 }
 
-#[get("/summary_data")]
-async fn get_root_data(s: Session) -> impl Responder {
+#[get("/upcoming_events")]
+async fn get_upcoming_events(s: Session) -> impl Responder {
     auth!(s);
 
     let id: String = s.get("user_id").unwrap().unwrap();
@@ -132,7 +132,7 @@ async fn get_root_data(s: Session) -> impl Responder {
     let conn = db::connect();
     let events_data = db::get_events_data(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(SummaryDataTemplate { events_data }.render().unwrap())
+    HttpResponse::Ok().body(UpcomingEventsTemplate { events_data }.render().unwrap())
 }
 
 #[get("/login")]
@@ -492,7 +492,7 @@ pub async fn start() -> std::io::Result<()> {
                     .build(),
             )
             .service(get_root)
-            .service(get_root_data)
+            .service(get_upcoming_events)
             .service(get_login)
             .service(post_login)
             .service(get_events)
@@ -508,7 +508,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_seats)
             .service(post_seats)
             .service(get_css)
-            .service(get_summary_data_js)
+            .service(get_upcoming_events_js)
             .service(delete_event)
     })
     .bind(("0.0.0.0", 8080))?

@@ -1,7 +1,7 @@
 /**
  * The html div element that we store the upcoming events summary
  */
-let upcomingEventsSummaryContainer;
+let upcomingEventsContainer;
 
 /**
  * The amount of secs to wait before updating the upcoming events summary
@@ -13,9 +13,9 @@ let msecs = 5000;
  * Calls the web server to get the rendered event summary HTML
  * @returns The rendered event summary HTML
  */
-const getRenderedEventSummaryData = async () => {
+const getRenderedUpcomingEventsSummaryData = async () => {
   try {
-    let response = await fetch("/summary_data");
+    let response = await fetch("/upcoming_events");
     return response.text();
   } catch (error) {
     console.log(error);
@@ -27,18 +27,16 @@ const getRenderedEventSummaryData = async () => {
  * Must wait until windowed is loaded to use this function, otherwise
  * the target html element won't exist
  */
-const initializeUpcomingEventsSummaryContainer = () => {
-  upcomingEventsSummaryContainer = document.getElementById(
-    "upcomingEventsSummaryContainer"
-  );
+const initializeUpcomingEventsContainer = () => {
+  upcomingEventsContainer = document.getElementById("upcomingEventsContainer");
 };
 
 /**
  * Inserts the rendered event summary html on the summary page
  */
-const updateUpcomingEventsSummaryContainerData = async () => {
-  upcomingEventsSummaryContainer.innerHTML =
-    await getRenderedEventSummaryData();
+const updateUpcomingEventsContainerData = async () => {
+  upcomingEventsContainer.innerHTML =
+    await getRenderedUpcomingEventsSummaryData();
 };
 
 /**
@@ -46,9 +44,9 @@ const updateUpcomingEventsSummaryContainerData = async () => {
  * every ten seconds
  */
 window.onload = () => {
-  initializeUpcomingEventsSummaryContainer();
-  updateUpcomingEventsSummaryContainerData();
+  initializeUpcomingEventsContainer();
+  updateUpcomingEventsContainerData();
   window.setInterval(() => {
-    updateUpcomingEventsSummaryContainerData();
+    updateUpcomingEventsContainerData();
   }, msecs);
 };
