@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Drive or Ride</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
     <link rel="stylesheet" type="text/css" href="/css" />
+    <script type="text/javascript" src="/js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="title">
         <h1>Rides</h1>
@@ -17,71 +20,12 @@
     </div>
     <div class="summary-box">
         <a href="/events?flow=drive" class="link-button">Drive</a>
-        
+
         <a href="/events?flow=ride" class="link-button">Ride</a>
     </div>
     <a href="/manage_events">Manage Events</a>
     <h2 style="margin-top: 36px;">Upcoming</h2>
-    <div class="list-box">
-        {% for eventData in events_data %}
-            <div class="event-sum">
-                <div class="event-sum-title">
-                    <p class="event-name">{{eventData.event.name}}</p>
-                    <div>
-                        <p class="event-date">{{eventData.event.time.format("%A, %B %d")}}</p>
-                        <p class="event-time">{{eventData.event.time.format("%l:%M%p")}}</p>
-                    </div>
-                </div>
-                {% if eventData.is_driver %}
-                <div class="event-sum-address">
-                    <a>
-                    <p>{{eventData.event.address1}}</p>
-                    <p>{{eventData.event.address2}}</p>
-                    <p>{{eventData.event.city}}, {{eventData.event.state}} {{eventData.event.zipcode}}</p>
-                    </a>
-                </div>
-                <div class="event-sum-riders">
-                    {% if eventData.riders.is_some() %}
-                        <ul>
-                        {% for riderInfo in eventData.riders.as_ref().unwrap() %}
-                            <li>
-                                {{riderInfo.0.fullname}}
-                                <ul>
-                                    <li><a href="sms:{{riderInfo.0.number}}">{{riderInfo.0.number}}</a></li>
-                                    <li>{{riderInfo.1}}</li>
-                                </ul>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-                {% else %}
-                    {%if eventData.driver.is_some()%}
-                        <ul>
-                            <li>
-                                {{eventData.driver.as_ref().unwrap().0.fullname}}
-                                <ul>
-                                    <li>
-                                        <a href="sms:{{eventData.driver.as_ref().unwrap().0.number}}">
-                                            {{eventData.driver.as_ref().unwrap().0.number}}
-                                        </a>
-                                    </li>
-                                    <li>{{eventData.driver.as_ref().unwrap().1.color}}
-                                        {{eventData.driver.as_ref().unwrap().1.make}}
-                                        {{eventData.driver.as_ref().unwrap().1.model}}
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <div class="event-sum-address">
-                            <p>Searching for a Driver...</p>
-                            <p>Refresh Page for Updates</p>
-                        </div>
-                    {% endif %}
-                {% endif %}
-                </div>
-        {% endfor %}
-    </div> 
+
 </body>
+
 </html>
