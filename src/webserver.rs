@@ -44,7 +44,11 @@ struct LoginTemplate {
 
 #[derive(Template)]
 #[template(path = "summary.html")]
-struct SummaryTemplate {
+struct SummaryTemplate {}
+
+#[derive(Template)]
+#[template(path = "summary.html")]
+struct SummaryDataTemplate {
     events_data: Vec<EventData>,
 }
 
@@ -115,6 +119,12 @@ async fn get_summary_data_js() -> impl Responder {
 #[get("/")]
 async fn get_root(s: Session) -> impl Responder {
     auth!(s);
+    HttpResponse::Ok().body(SummaryTemplate {}.render().unwrap())
+}
+
+#[get("/summary_data")]
+async fn get_root_data(s: Session) -> impl Responder {
+    auth!(s);
 
     let id: String = s.get("user_id").unwrap().unwrap();
     let id = Uuid::parse_str(id.as_str()).unwrap();
@@ -122,7 +132,7 @@ async fn get_root(s: Session) -> impl Responder {
     let conn = db::connect();
     let events_data = db::get_events_data(&conn, id).unwrap();
 
-    HttpResponse::Ok().body(SummaryTemplate { events_data }.render().unwrap())
+    HttpResponse::Ok().body(SummaryDataTemplate { events_data }.render().unwrap())
 }
 
 #[get("/login")]
@@ -482,6 +492,7 @@ pub async fn start() -> std::io::Result<()> {
                     .build(),
             )
             .service(get_root)
+            .service(get_root_data)
             .service(get_login)
             .service(post_login)
             .service(get_events)
