@@ -47,7 +47,7 @@ struct LoginTemplate {
 struct SummaryTemplate {}
 
 #[derive(Template)]
-#[template(path = "summary.html")]
+#[template(path = "summary_data.html")]
 struct SummaryDataTemplate {
     events_data: Vec<EventData>,
 }
