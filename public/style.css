@@ -230,17 +230,23 @@ p {
 .event-sum-title .event-time, 
 .event-sum-title .unattend-event {
     text-align: right;
+    white-space: nowrap;
 }
 
-.event-date, .event-time, .unattend-event {
+.event-date, .event-time {
     font-size: 14px;
     margin :0;
     color: #666;
 }
 
-.link-button .event-date, .link-button .event-time, .link-button .unattend-event {
+.link-button .event-date, .link-button .event-time {
     align-self: flex-start;
     color: #eee;
+}
+
+.unattend-event {
+  display: block;
+  align-self: flex-start;
 }
 
 .event-sum-address {
@@ -382,10 +388,6 @@ p {
 
   .event-sum .event-name {
       margin-right: 16px;
-  }
-
-  .event-sum .event-date {
-      white-space: nowrap;
   }
 
   .event-sum {
