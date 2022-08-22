@@ -1,9 +1,12 @@
 use crate::db;
 use crate::models::{Campus, Event, EventData, Vehicle};
+
 use actix_session::{storage::CookieSessionStore, Session, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_files as fs;
+
 use askama::Template;
 use chrono::NaiveDateTime;
 use log::info;
@@ -507,9 +510,8 @@ pub async fn start() -> std::io::Result<()> {
             .service(post_pickup)
             .service(get_seats)
             .service(post_seats)
-            .service(get_css)
-            .service(get_upcoming_events_js)
             .service(delete_event)
+            .service(fs::Files::new("/", "./public"))
     })
     .bind(("0.0.0.0", 8080))?
     .run()
