@@ -4,11 +4,11 @@
         <div class="event-sum-title">
             <p class="event-name">{{eventData.event.name}}</p>
             <div>
+                <a class="unattend-event" onclick="removeEvent('{{eventData.event.id}}')">
+                    Unattend Event
+                </a>
                 <p class="event-date">{{eventData.event.time.format("%A, %B %d")}}</p>
                 <p class="event-time">{{eventData.event.time.format("%l:%M%p")}}</p>
-                <p class="unattend-event" onclick="removeEvent('{{eventData.event.id}}')">
-                    Unattend Event
-                </p>
             </div>
         </div>
         {% if eventData.is_driver %}
