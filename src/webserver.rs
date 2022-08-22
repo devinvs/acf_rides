@@ -101,23 +101,6 @@ macro_rules! auth {
     };
 }
 
-#[get("/css")]
-async fn get_css() -> impl Responder {
-    let mut f = File::open("./public/style.css").unwrap();
-    let mut buf = String::new();
-    f.read_to_string(&mut buf).unwrap();
-
-    HttpResponse::Ok().content_type("text/css").body(buf)
-}
-
-#[get("/upcoming_events_js")]
-async fn get_upcoming_events_js() -> impl Responder {
-    let mut f = File::open("./public/upcoming_events.js").unwrap();
-    let mut buf = String::new();
-    f.read_to_string(&mut buf).unwrap();
-
-    HttpResponse::Ok().content_type("text/css").body(buf)
-}
 
 #[get("/")]
 async fn get_root(s: Session) -> impl Responder {
