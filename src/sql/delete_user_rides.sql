@@ -1,3 +1,2 @@
-UPDATE rides
-SET rider_id = NULL
+DELETE FROM rides
 WHERE rider_id = ? AND event_id = ?;
