@@ -1,0 +1,53 @@
+{
+    "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+    "name": "ACF Rides",
+    "short_name": "ACF Rides",
+    "display": "fullscreen",
+    "description": "Rides app for ACF",
+    "theme_color": "#911f27",
+    "background_color": "#fff4d2",
+    "orientation": "portrait",
+    "scope": "/",
+    "start_url": ".",
+    "icons": [{
+        "src": "images/public/logo512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+    }, {
+        "src": "images/public/logo384.png",
+        "sizes": "384x384",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo180.png",
+        "sizes": "180x180",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo152.png",
+        "sizes": "152x152",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo128.png",
+        "sizes": "128x128",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo120.png",
+        "sizes": "120x120",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+    },{
+        "src": "images/public/logo72.png",
+        "sizes": "72x72",
+        "type": "image/png"
+    }]
+}
