@@ -11,6 +11,7 @@ use serde::Deserialize;
 use std::env;
 use std::fs::File;
 use std::io::Read;
+use std::sync::mpsc::Sender;
 use uuid::Uuid;
 
 use lazy_static::lazy_static;
@@ -33,6 +34,10 @@ lazy_static! {
             .next()
             .unwrap_or(Uuid::new_v4())
     };
+}
+
+struct AppState {
+    tx: Sender<()>
 }
 
 // Templates
@@ -222,7 +227,7 @@ struct PickupData {
 }
 
 #[post("/pickup")]
-async fn post_pickup(s: Session, form: web::Form<PickupData>) -> impl Responder {
+async fn post_pickup(s: Session, form: web::Form<PickupData>, state: web::Data<AppState>) -> impl Responder {
     auth!(s);
 
     let id: String = s.get("user_id").unwrap().unwrap();
@@ -236,6 +241,9 @@ async fn post_pickup(s: Session, form: web::Form<PickupData>) -> impl Responder 
 
     let conn = db::connect();
     db::create_ride(&conn, id, event_id, campus, pickup).unwrap();
+
+    // Notify worker thread
+    state.tx.send(()).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -311,7 +319,7 @@ struct SeatsData {
 }
 
 #[post("/seats")]
-async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
+async fn post_seats(s: Session, form: web::Form<SeatsData>, state: web::Data<AppState>) -> impl Responder {
     auth!(s);
 
     let id: String = s.get("user_id").unwrap().unwrap();
@@ -327,6 +335,9 @@ async fn post_seats(s: Session, form: web::Form<SeatsData>) -> impl Responder {
 
     let conn = db::connect();
     db::create_driver(&conn, id, event_id, vehicle_id, form.seats, campus).unwrap();
+
+    // Notify worker thread
+    state.tx.send(()).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -468,7 +479,7 @@ struct DeleteQuery {
 }
 
 #[post("/events/delete")]
-async fn delete_event(s: Session, q: web::Query<DeleteQuery>) -> impl Responder {
+async fn delete_event(s: Session, q: web::Query<DeleteQuery>, state: web::Data<AppState>) -> impl Responder {
     auth!(s);
 
     let id: String = s.get("user_id").unwrap().unwrap();
@@ -478,6 +489,9 @@ async fn delete_event(s: Session, q: web::Query<DeleteQuery>) -> impl Responder 
 
     let conn = db::connect();
     db::delete_user_event(&conn, id, event_id).unwrap();
+
+    // Notify worker thread
+    state.tx.send(()).unwrap();
 
     HttpResponse::SeeOther()
         .append_header(("Location", "/"))
@@ -500,13 +514,14 @@ async fn events_info(s: Session) -> impl Responder {
     )
 }
 
-pub async fn start() -> std::io::Result<()> {
+pub async fn start(tx: Sender<()>) -> std::io::Result<()> {
     info!("Starting Webserver");
 
     let secret_key = Key::generate();
 
     HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(AppState { tx: tx.clone() }))
             .wrap(Logger::new("%r"))
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())

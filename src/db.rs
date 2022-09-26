@@ -539,7 +539,6 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
                     break 'outer;
                 }
             }
-            println!("Assign???");
 
             assign_ride(&conn, event.id, ride.rider_id, rit_drivers[driver_index].0.driver_id)?;
         }
@@ -596,7 +595,6 @@ fn assign_ride(conn: &Connection, event_id: Uuid, rider_id: Uuid, driver_id: Uui
 
 /// Get list of unassigned riders for an event on a campus
 fn unassigned_campus_riders(conn: &Connection, event_id: Uuid, campus: Campus) -> Result<Vec<Ride>, Box<dyn Error>> {
-    info!("Get unassigned riders for a campus");
     let mut cursor = conn.prepare(include_str!("./sql/get_unassigned_riders.sql"))?.into_cursor();
     cursor.bind(&[Value::String(event_id.to_string()), Value::String(campus.into())])?;
 
