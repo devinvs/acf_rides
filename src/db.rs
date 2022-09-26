@@ -6,7 +6,7 @@ use log::info;
 use std::path::Path;
 use std::error::Error;
 
-use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride};
+use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride, EventInfo};
 
 /// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
@@ -526,7 +526,7 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
         // RIT
         let rit_rides = unassigned_campus_riders(&conn, event.id, Campus::RIT)?;
 
-        for ride in rit_rides {
+        'outer: for ride in rit_rides {
             let mut driver_index = 0;
             let rit_drivers = get_available_drivers(&conn, event.id, Campus::RIT)?;
             if driver_index >= rit_drivers.len() {
@@ -535,6 +535,9 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
 
             while rit_drivers[driver_index].0.seats - rit_drivers[driver_index].1 <= 0 {
                 driver_index += 1;
+                if driver_index >= rit_drivers.len() {
+                    break 'outer;
+                }
             }
 
             assign_ride(&conn, event.id, ride.rider_id, rit_drivers[driver_index].0.driver_id)?;
@@ -543,7 +546,7 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
         // UofR
         let ur_rides = unassigned_campus_riders(&conn, event.id, Campus::UofR)?;
 
-        for ride in ur_rides {
+        'outer: for ride in ur_rides {
             let mut driver_index = 0;
             let ur_drivers = get_available_drivers(&conn, event.id, Campus::UofR)?;
             if driver_index >= ur_drivers.len() {
@@ -552,6 +555,9 @@ pub fn match_rides(conn: &Connection) -> Result<(), Box<dyn Error>> {
 
             while ur_drivers[driver_index].0.seats - ur_drivers[driver_index].1 <= 0 {
                 driver_index += 1;
+                if driver_index >= ur_drivers.len() {
+                    break 'outer;
+                }
             }
             println!("Assign???");
 
@@ -599,4 +605,17 @@ fn unassigned_campus_riders(conn: &Connection, event_id: Uuid, campus: Campus) -
     }
 
     Ok(rides)
+}
+
+/// Get info about current events
+pub fn get_events_info(conn: &Connection) -> Result<Vec<EventInfo>, Box<dyn Error>> {
+   info!("Get current events info");
+   let mut events = Vec::new();
+
+    let mut cursor = conn.prepare(include_str!("./sql/events_info.sql"))?.into_cursor();
+    while let Some(row) = cursor.next()? {
+        events.push(row.into());
+    }
+
+   Ok(events)
 }
