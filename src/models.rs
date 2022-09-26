@@ -223,3 +223,24 @@ impl From<&[Value]> for Ride {
         }
     }
 }
+
+/// Info about a single event
+pub struct EventInfo {
+    pub name: String,
+    pub riders: usize,
+    pub unassigned: usize
+}
+
+impl From<&[Value]> for EventInfo {
+    fn from(row: &[Value]) -> Self {
+        let name = row[0].as_string().unwrap().to_string();
+        let riders = row[1].as_integer().unwrap() as usize;
+        let unassigned = row[2].as_integer().unwrap() as usize;
+
+        EventInfo {
+            name,
+            riders,
+            unassigned
+        }
+    }
+}

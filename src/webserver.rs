@@ -1,5 +1,5 @@
 use crate::db;
-use crate::models::{Campus, Event, EventData, Vehicle};
+use crate::models::{Campus, Event, EventData, Vehicle, EventInfo};
 use actix_session::{storage::CookieSessionStore, Session, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
@@ -86,6 +86,12 @@ struct VehiclesTemplate {
 #[derive(Template)]
 #[template(path = "seats.html")]
 struct SeatsTemplate {}
+
+#[derive(Template)]
+#[template(path = "info.html")]
+struct EventsInfoTemplate {
+    events: Vec<EventInfo>
+}
 
 macro_rules! auth {
     ($s:ident) => {
@@ -478,6 +484,22 @@ async fn delete_event(s: Session, q: web::Query<DeleteQuery>) -> impl Responder 
         .finish()
 }
 
+#[get("/events/info")]
+async fn events_info(s: Session) -> impl Responder {
+    auth!(s);
+
+    let conn = db::connect();
+    let events = db::get_events_info(&conn).unwrap();
+
+    HttpResponse::Ok().body(
+        EventsInfoTemplate {
+            events
+        }
+        .render()
+        .unwrap()
+    )
+}
+
 pub async fn start() -> std::io::Result<()> {
     info!("Starting Webserver");
 
@@ -510,6 +532,7 @@ pub async fn start() -> std::io::Result<()> {
             .service(get_css)
             .service(get_upcoming_events_js)
             .service(delete_event)
+            .service(events_info)
     })
     .bind(("0.0.0.0", 8080))?
     .run()

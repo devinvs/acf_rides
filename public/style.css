@@ -177,6 +177,14 @@ p {
   margin-top: 0.5em;
 }
 
+th {
+    color: #911f27 !important;
+}
+
+td {
+    text-align: center;
+}
+
 .error {
   color: #911f27;
   font-style: italic;

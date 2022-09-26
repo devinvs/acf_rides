@@ -6,7 +6,7 @@ use log::info;
 use std::path::Path;
 use std::error::Error;
 
-use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride};
+use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride, EventInfo};
 
 /// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
@@ -607,4 +607,17 @@ fn unassigned_campus_riders(conn: &Connection, event_id: Uuid, campus: Campus) -
     }
 
     Ok(rides)
+}
+
+/// Get info about current events
+pub fn get_events_info(conn: &Connection) -> Result<Vec<EventInfo>, Box<dyn Error>> {
+   info!("Get current events info");
+   let mut events = Vec::new();
+
+    let mut cursor = conn.prepare(include_str!("./sql/events_info.sql"))?.into_cursor();
+    while let Some(row) = cursor.next()? {
+        events.push(row.into());
+    }
+
+   Ok(events)
 }
