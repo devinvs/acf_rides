@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     email TEXT,
     fullname TEXT,
@@ -6,7 +6,7 @@ CREATE TABLE users (
     number TEXT
 );
 
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id TEXT PRIMARY KEY,
     name TEXT,
     time INTEGER,
@@ -19,7 +19,7 @@ CREATE TABLE events (
     FOREIGN KEY (creator_id) REFERENCES users (id)
 );
 
-CREATE TABLE rides (
+CREATE TABLE IF NOT EXISTS rides (
     rider_id TEXT,
     driver_id TEXT,
     event_id TEXT,
@@ -30,7 +30,7 @@ CREATE TABLE rides (
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
 );
 
-CREATE TABLE vehicles (
+CREATE TABLE IF NOT EXISTS vehicles (
     id TEXT PRIMARY KEY,
     user_id TEXT,
     color TEXT,
@@ -39,7 +39,7 @@ CREATE TABLE vehicles (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE TABLE drivers (
+CREATE TABLE IF NOT EXISTS drivers (
     event_id TEXT,
     driver_id TEXT,
     seats INTEGER,
@@ -50,3 +50,9 @@ CREATE TABLE drivers (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS resets (
+    user_id TEXT,
+    reset_id TEXT,
+    request_time INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);

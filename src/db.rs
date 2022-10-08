@@ -3,27 +3,18 @@ use sqlite::{Connection, Value, State};
 use uuid::Uuid;
 use log::info;
 
-use std::path::Path;
 use std::error::Error;
 
-use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride, EventInfo};
+use crate::models::{User, Campus, Event, Vehicle, Driver, EventData, Ride, EventInfo, ResetRequest};
 
 /// Path for the sqlite database
 const DB_PATH: &'static str = "rides.db";
 
-/// Check if the database exists.
-/// If not, create the database and run the init script
-/// to create the database schema
+/// Create database if not exists and update schema
 pub fn create_database() {
-    info!("Checking for Database");
-    let path = Path::new(DB_PATH);
-
-    if !path.exists() {
-        info!("Database not found, creating...");
+        info!("Running Database Migrations");
         let conn = sqlite::open(DB_PATH).unwrap();
-
         conn.execute(include_str!("./sql/init_database.sql")).unwrap();
-    }
 }
 
 /// Create a connection to the database
@@ -59,6 +50,30 @@ pub fn create_user(
     }
 
     Ok(())
+}
+
+/// Set password for a user
+pub fn set_password(
+    conn: &Connection,
+    user_id: Uuid,
+    password: String,
+) -> Result<(), Box<dyn Error>> {
+    info!("Resetting user password");
+
+    let hash = bcrypt::hash(password, 7)?;
+
+    let mut stmt = conn.prepare(include_str!("./sql/set_password.sql"))?;
+
+    stmt.bind(1, hash.as_str())?;
+    stmt.bind(2, &*user_id.to_string())?;
+
+    loop {
+        let state = stmt.next()?;
+        if state == State::Done { break; }
+    }
+
+    Ok(())
+
 }
 
 /// Search for a user by their email
@@ -618,4 +633,59 @@ pub fn get_events_info(conn: &Connection) -> Result<Vec<EventInfo>, Box<dyn Erro
     }
 
    Ok(events)
+}
+
+/// Create a new password reset request
+pub fn create_reset_request(conn: &Connection, user_id: Uuid) -> Result<Uuid, Box<dyn Error>> {
+    info!("Create password reset request");
+    let id = Uuid::new_v4();
+    let id_s = id.to_string();
+
+    let mut stmt = conn.prepare(include_str!("./sql/create_reset.sql"))?;
+    let now = Local::now().naive_local().timestamp();
+
+    stmt.bind(1, &*user_id.to_string())?;
+    stmt.bind(2, id_s.as_str())?;
+    stmt.bind(3, now)?;
+
+    loop {
+        let state = stmt.next()?;
+        if state == State::Done { break; }
+    }
+
+    Ok(id)
+}
+
+/// Get a reset request by id
+pub fn get_reset_request(conn: &Connection, id: Uuid) -> Result<Option<ResetRequest>, Box<dyn Error>> {
+    info!("Get reset request");
+
+    let mut cursor = conn.prepare(
+        include_str!("./sql/get_request.sql")
+    )?.into_cursor();
+
+    cursor.bind(&[Value::String(id.to_string())])?;
+    let row = cursor.next()?;
+
+    if row.is_none() { return Ok(None); }
+    let row = row.unwrap();
+
+    Ok(Some(row.into()))
+}
+
+/// Delete a reset request by id
+pub fn delete_reset_request(conn: &Connection, id: Uuid) -> Result<(), Box<dyn Error>> {
+    info!("delete old events");
+    let mut remove_reset = conn.prepare(
+        include_str!("./sql/delete_reset.sql")
+    )?;
+
+    remove_reset.bind(1, &*id.to_string())?;
+
+    loop {
+        let state = remove_reset.next()?;
+        if state==State::Done { break; }
+    }
+
+    Ok(())
 }

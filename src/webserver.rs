@@ -16,6 +16,8 @@ use uuid::Uuid;
 
 use lazy_static::lazy_static;
 
+use crate::email::send_reset_email;
+
 // Secret Invite ID, loaded from environment variables
 lazy_static! {
     static ref INVITE_ID: Uuid = {
@@ -97,6 +99,15 @@ struct SeatsTemplate {}
 struct EventsInfoTemplate {
     events: Vec<EventInfo>
 }
+
+#[derive(Template)]
+#[template(path = "check_email.html")]
+struct CheckEmailTemplate {}
+
+#[derive(Template)]
+#[template(path = "set_password.html")]
+struct SetPasswordTemplate {}
+
 
 macro_rules! auth {
     ($s:ident) => {
@@ -470,7 +481,52 @@ async fn post_manage_events(s: Session, form: web::Form<ManageEventForm>) -> imp
 
 #[get("/reset")]
 async fn get_reset_password() -> impl Responder {
-    ResetPasswordTemplate {}.render().unwrap()
+    ResetPasswordTemplate {}
+}
+
+#[derive(Deserialize)]
+struct RequestResetForm {
+    email: String
+}
+
+#[post("/reset")]
+async fn post_reset_password(form: web::Form<RequestResetForm>) -> impl Responder {
+    let conn = db::connect();
+
+    if let Ok(Some(user)) = db::get_user_by_email(&conn, form.email.clone()) {
+        let id = db::create_reset_request(&conn, user.id).unwrap();
+        send_reset_email(&form.email, &id.to_string()).await.ok();
+    }
+    
+    CheckEmailTemplate {}
+}
+
+#[get("/reset/{id}")]
+async fn get_reset_password_with_id(path: web::Path<(String,)>) -> impl Responder {
+    SetPasswordTemplate {}
+}
+
+#[derive(Deserialize)]
+struct ResetForm {
+    password: String
+}
+
+#[post("/reset/{id}")]
+async fn post_reset_password_with_id(s: Session, path: web::Path<(String,)>, form: web::Form<ResetForm>) -> impl Responder {
+    let conn = db::connect();
+
+    if let Ok(id) = Uuid::parse_str(&path.0) {
+        if let Ok(Some(req)) = db::get_reset_request(&conn, id) {
+            db::set_password(&conn, req.user_id, form.password.clone()).unwrap();
+
+            s.insert("logged_in", true).unwrap();
+            s.insert("user_id", req.user_id.to_string()).unwrap();
+        }
+    }
+
+    HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish()
 }
 
 #[derive(Debug, Deserialize)]
@@ -539,7 +595,6 @@ pub async fn start(tx: Sender<()>) -> std::io::Result<()> {
             .service(post_signup)
             .service(get_manage_events)
             .service(post_manage_events)
-            .service(get_reset_password)
             .service(get_pickup)
             .service(post_pickup)
             .service(get_seats)
@@ -548,6 +603,10 @@ pub async fn start(tx: Sender<()>) -> std::io::Result<()> {
             .service(get_upcoming_events_js)
             .service(delete_event)
             .service(events_info)
+            .service(get_reset_password_with_id)
+            .service(get_reset_password)
+            .service(post_reset_password_with_id)
+            .service(post_reset_password)
     })
     .bind(("0.0.0.0", 8080))?
     .run()

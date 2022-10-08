@@ -244,3 +244,27 @@ impl From<&[Value]> for EventInfo {
         }
     }
 }
+
+/// A users password reset request
+pub struct ResetRequest {
+    pub user_id: Uuid,
+    pub request_id: Uuid,
+    pub request_time: NaiveDateTime
+}
+
+impl From<&[Value]> for ResetRequest {
+    fn from(row: &[Value]) -> Self {
+        let user_id = Uuid::parse_str(row[0].as_string().unwrap()).unwrap();
+        let request_id = Uuid::parse_str(row[1].as_string().unwrap()).unwrap();
+        let request_time = NaiveDateTime::from_timestamp(
+            row[2].as_integer().unwrap(),
+            0
+        );
+
+        Self {
+            user_id,
+            request_id,
+            request_time
+        }
+    }
+}
